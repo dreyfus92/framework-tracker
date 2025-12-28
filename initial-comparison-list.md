@@ -5,10 +5,10 @@
 - [Next.js](https://nextjs.org) - React
 - [Nuxt](https://nuxt.com) - Vue
 - [SvelteKit](https://kit.svelte.dev) - Svelte
-- [Remix](https://remix.run) - React
+- [Remix](https://remix.run) - Preact
 - [Astro](https://astro.build) - Framework-agnostic
 - [SolidStart](https://start.solidjs.com) - Solid
-- [Qwik](https://qwik.dev/docs/) - Qwik
+- [Qwik City](https://qwik.dev/docs/qwikcity/) - Qwik
 - [TanStack Start](https://tanstack.com/start/latest/docs/framework/react/overview) - Framework-agnostic (React, Solid, Vue planned)
 
 > **Note on TanStack Start**: Since it's becoming framework-agnostic, we could either:
