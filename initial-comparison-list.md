@@ -12,10 +12,10 @@
 - [TanStack Start](https://tanstack.com/start/latest/docs/framework/react/overview) - Framework-agnostic (React, Solid, Vue planned)
 
 > **Note on TanStack Start**: Since it's becoming framework-agnostic, we could either:
+>
 > - Test TanStack Start + React only as the most common
 > - Drop it from direct comparisons
 > - Include multiple TanStack Start entries (one per supported framework)
-
 
 ## Comparable Metrics
 
@@ -29,6 +29,7 @@ To keep comparisons fair across these metrics I think each check needs to done t
 Metrics affecting developer productivity, build times, and CI/CD pipeline performance.
 
 #### Dependencies & Installation
+
 - Total dependency count (production + dev)
 - Peer dependency conflicts/warnings
 - Production dependencies (direct + transitive)
@@ -41,6 +42,7 @@ Metrics affecting developer productivity, build times, and CI/CD pipeline perfor
 - Unmaintained packages (no release in 1+ years) <!-- is one year too short? -->
 
 #### Build & Compilation
+
 - Cold build time (clean install → production build complete)
 - Warm build time (incremental rebuild with cache)
 - Build output size (total bytes of production build)
@@ -50,6 +52,7 @@ Metrics affecting developer productivity, build times, and CI/CD pipeline perfor
 - Number of build warnings (default config)
 
 #### Development Experience
+
 - Development server startup time
 - Hot Module Replacement (HMR) / Fast Refresh speed
 - Time from file save to browser update (feedback loop)
@@ -58,10 +61,12 @@ Metrics affecting developer productivity, build times, and CI/CD pipeline perfor
 - DevTools available (framework-specific browser extensions)
 
 #### CI/CD Performance
+
 - CI build time <!-- maybe just compare in Github Actions to start with? -->
 - CI cache effectiveness (build time with warm cache)
 
 #### Code Quality & Security
+
 - Packages with known vulnerabilities
   - Critical/high severity vulnerabilities
   - The others
@@ -71,7 +76,8 @@ Metrics affecting developer productivity, build times, and CI/CD pipeline perfor
 - Use of deprecated Node.js APIs in dependencies
 
 #### Testing
-- Speed when of tests when used in component tests (jest and Vitest) 
+
+- Speed when of tests when used in component tests (jest and Vitest)
   - <!-- For example adding TanStack Router into a component tests increase the initial warm up time in Vitest -->
   - <!-- Should probably compare running tests in CI/CD as well? -->
 
@@ -79,7 +85,7 @@ Metrics affecting developer productivity, build times, and CI/CD pipeline perfor
 
 Metrics affecting end-user experience, page load times, and browser performance.
 
-<!--  
+<!--
 I want to point out a lot of the stuff in this list will be tricky to do for example we need to do these tests for
 
 - each rendering mode
@@ -90,13 +96,15 @@ This is without even getting into the fact the some of these frameworks run diff
 -->
 
 #### Core Web Vitals
-- Largest Contentful Paint (LCP) 
+
+- Largest Contentful Paint (LCP)
 - Interaction to Next Paint (INP)
 - Cumulative Layout Shift (CLS)
 - First Contentful Paint (FCP)
 - Time to Interactive (TTI)
 
 #### Bundle Analysis
+
 - Initial JS bundle size (first page load, eager JS)
 - Total JS shipped for a simple multi-page app
 - Framework runtime size (framework's own overhead)
@@ -110,25 +118,28 @@ This is without even getting into the fact the some of these frameworks run diff
 - Asset optimisation (minification, compression)
 
 #### Hydration & Interactivity
+
 - Hydration strategy (none/partial/full/islands)
 - Time to hydrate (if applicable)
 - Works without JavaScript (progressive enhancement yes/no)
 - JavaScript required for navigation (yes/no)
 
 #### Web Standards & Legacy Code
+
 - Polyfills included in production bundle
 - Polyfills for >95% supported features (waste indicators)
 - Dead/unused code in production bundle
 - Module format (ESM, CJS, UMD, or mixed)
 - Native FormData usage vs framework abstraction
 
-
 ### 📋 Framework Context
 
 Additional information that doesn't fit into dev time or runtime performance but provides important context.
 
 #### Capabilities
+
 **Rendering modes supported** (yes/no for each)
+
 - Static Site Generation (SSG)
 - Server-Side Rendering (SSR)
 - Client-Side Rendering (CSR)
@@ -136,6 +147,7 @@ Additional information that doesn't fit into dev time or runtime performance but
 - Streaming SSR
 
 **Built-in features** (yes/no for each)
+
 - File-system based routing
 - API routes / server functions
 - Image optimisation
@@ -143,6 +155,7 @@ Additional information that doesn't fit into dev time or runtime performance but
 - Middleware support
 
 **Deployment targets** (officially supported)
+
 - Vercel, Netlify, Cloudflare, AWS, self-hosted Docker, etc.
 
 #### Standards Compliance
@@ -150,7 +163,9 @@ Additional information that doesn't fit into dev time or runtime performance but
 - Web standards vs custom APIs ratio
 
 #### Starter Template Analysis
+
 Using official "create" commands or template
+
 - Default number of dependencies
 - Default install size
 - Default build output size

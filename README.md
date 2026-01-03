@@ -1,46 +1,91 @@
-# Astro Starter Kit: Basics
+# Framework Tracker
 
-```sh
-npm create astro@latest -- --template basics
+A comprehensive comparison site for modern meta-frameworks, tracking performance metrics, developer experience, and runtime characteristics across popular options like Next.js, Nuxt, SvelteKit, Astro, and more.
+
+## About
+
+This project aims to provide objective, data-driven comparisons of meta-frameworks to help developers make informed decisions. We track metrics across two key dimensions:
+
+- **Dev Time Performance**: Dependencies, build times, CI/CD performance, and developer experience
+- **Runtime Performance**: Core Web Vitals, bundle sizes, hydration strategies, and end-user experience
+
+## Roadmap
+
+See [initial-comparison-list.md](./initial-comparison-list.md) for the full list of frameworks we're tracking and the metrics we're measuring.
+
+## Project Structure
+
+This is a monorepo managed with pnpm workspaces:
+
+```
+framework-tracker/
+├── packages/
+│   ├── docs/              # Astro-based documentation site
+│   └── metrics-collector/ # Tool for collecting framework metrics
+├── initial-comparison-list.md  # Roadmap and metrics plan
+└── package.json           # Workspace root configuration
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Getting Started
 
-## 🚀 Project Structure
+### Prerequisites
 
-Inside of your Astro project, you'll see the following folders and files:
+- [Node.js](https://nodejs.org/) (version specified in package.json engines, or latest LTS)
+- [pnpm](https://pnpm.io/) (recommended package manager)
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+### Installation
+
+```bash
+# Install dependencies
+pnpm install
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+### Development
 
-## 🧞 Commands
+```bash
+# Start the documentation site in development mode
+pnpm dev:docs
 
-All commands are run from the root of the project, from a terminal:
+# The site will be available at http://localhost:4321
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+### Build
 
-## 👀 Want to learn more?
+```bash
+# Build the documentation site for production
+pnpm build:docs
+```
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Preview
+
+```bash
+# Preview the production build locally
+pnpm preview:docs
+```
+
+### Code Quality
+
+```bash
+# Check code formatting
+pnpm format:check
+
+# Fix code formatting
+pnpm format
+
+# Check for linting errors
+pnpm lint
+
+# Automatically fix linting issues
+pnpm lint:fix
+
+# Run TypeScript type checking
+pnpm type-check
+```
+
+## Contributing
+
+Contributions are welcome! Whether it's adding new metrics, improving the documentation site, or enhancing the metrics collector, we'd love your help.
+
+## License
+
+See [LICENSE](./LICENSE) for details.
