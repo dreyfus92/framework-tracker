@@ -17,6 +17,7 @@
     "build:react-router": "pnpm --filter starter-react-router build",
     "dev:tanstack": "pnpm --filter starter-tanstack-start-react dev",
     "build:tanstack": "pnpm --filter starter-tanstack-start-react build",
+    "generate:stats": "pnpm --filter @framework-tracker/stats-generator generate",
     "lint": "pnpm -r --parallel lint",
     "lint:fix": "pnpm -r --parallel lint:fix",
     "format": "pnpm -r --parallel format",
