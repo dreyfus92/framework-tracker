@@ -1,5 +1,5 @@
 import { readdir } from 'node:fs/promises'
-import { packagesDir } from './constants'
+import { packagesDir } from './constants.ts'
 
 export async function getStarterPackages() {
   const packageDirs = await readdir(packagesDir)

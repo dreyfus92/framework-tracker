@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate": "tsx src/create-stats.ts",
+    "generate": "node --experimental-strip-types src/create-stats.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
-    "prettier": "^3.7.4",
-    "tsx": "^4.21.0"
+    "prettier": "^3.7.4"
   }
 }

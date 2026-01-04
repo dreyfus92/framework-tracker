@@ -1,7 +1,7 @@
 import { access, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { packagesDir } from './constants'
-import type { FrameworkStats } from './types'
+import { packagesDir } from './constants.ts'
+import type { FrameworkStats } from './types.ts'
 
 export async function saveStats(packageName: string, stats: FrameworkStats) {
   const outputDir = join(packagesDir, 'docs', 'src', 'content', 'stats')

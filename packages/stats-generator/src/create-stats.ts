@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { getStarterPackages } from './get-starter-packages'
-import { packagesDir } from './constants'
-import { saveStats } from './save-stats'
-import type { FrameworkStats, PackageJson } from './types'
+import { getStarterPackages } from './get-starter-packages.ts'
+import { packagesDir } from './constants.ts'
+import { saveStats } from './save-stats.ts'
+import type { FrameworkStats, PackageJson } from './types.ts'
 
 async function createStats() {
   const starterPackages = await getStarterPackages()
