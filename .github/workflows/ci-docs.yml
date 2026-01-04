@@ -1,4 +1,4 @@
-name: CI
+name: CI - Docs
 
 on:
   push:
@@ -20,20 +20,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Format check
-        run: pnpm format:check
+        run: pnpm --filter @framework-tracker/docs format:check
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm --filter @framework-tracker/docs lint
 
       - name: Type check
-        run: pnpm type-check
+        run: pnpm --filter @framework-tracker/docs type-check
 
       - name: Build
         run: pnpm build:docs
