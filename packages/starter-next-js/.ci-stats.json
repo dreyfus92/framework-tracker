@@ -1,0 +1,7 @@
+{
+  "installTimeMs": 2500,
+  "coldBuildTimeMs": 6000,
+  "warmBuildTimeMs": 4800,
+  "timingMeasuredAt": "2026-01-06T08:30:00.000Z",
+  "runner": "ubuntu-latest"
+}

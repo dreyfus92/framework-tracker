@@ -1,4 +1,11 @@
-export interface FrameworkStats {
+export interface CIStats {
+  installTimeMs?: number
+  coldBuildTimeMs?: number
+  warmBuildTimeMs?: number
+  timingMeasuredAt?: string
+}
+
+export interface FrameworkStats extends CIStats {
   prodDependencies: number
   devDependencies: number
 }

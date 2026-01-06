@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { getStarterPackages } from './get-starter-packages.ts'
 import { packagesDir } from './constants.ts'
 import { saveStats } from './save-stats.ts'
+import { getCIStats } from './get-ci-stats.ts'
 import type { FrameworkStats, PackageJson } from './types.ts'
 
 async function createStats() {
@@ -21,9 +22,12 @@ async function createStats() {
       const prodCount = Object.keys(dependencies).length
       const devCount = Object.keys(devDependencies).length
 
+      const ciStats = await getCIStats(pkgDir)
+
       const stats: FrameworkStats = {
         prodDependencies: prodCount,
         devDependencies: devCount,
+        ...(ciStats ?? {}),
       }
 
       await saveStats(pkgDir, stats)
