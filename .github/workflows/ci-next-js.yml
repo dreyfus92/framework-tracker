@@ -55,11 +55,15 @@ jobs:
   measure:
     needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -116,5 +120,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add packages/starter-next-js/.ci-stats.json
-          git diff --staged --quiet || git commit -m "Update CI stats for starter-next-js [skip ci]"
-          git push
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Update CI stats for starter-next-js [skip ci]"
+
+          # Push to the PR branch or main
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git push origin HEAD:${{ github.head_ref }}
+          else
+            git push
+          fi
