@@ -2,6 +2,6 @@
   "name": "Next JS",
   "type": "starter-kit",
   "prodDependencies": 3,
-  "devDependencies": 8,
+  "devDependencies": 6,
   "npmGraphUrl": "https://npmgraph.js.org/?q=https://github.com/e18e/framework-tracker/blob/main/packages/starter-next-js/package.json"
 }
