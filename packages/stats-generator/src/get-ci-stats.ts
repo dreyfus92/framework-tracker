@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { packagesDir } from './constants.ts'
-import { CIStats } from './types.ts'
+import type { CIStats } from './types.ts'
 
 export async function getCIStats(pkgDir: string) {
   const ciStatsPath = join(packagesDir, pkgDir, '.ci-stats.json')
