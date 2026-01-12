@@ -1,0 +1,298 @@
+name: Measure All Build Times
+
+on:
+  workflow_run:
+    workflows: ["CI - Next.js", "CI - React Router", "CI - TanStack Start", "CI - Nuxt"]
+    types:
+      - completed
+    branches: [main]
+
+jobs:
+  measure:
+    # Only run on pull requests and if the triggering workflow succeeded
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      actions: read
+      pull-requests: read
+
+    steps:
+      - name: Wait for all CI workflows to complete
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pullRequests = context.payload.workflow_run.pull_requests;
+            if (!pullRequests || pullRequests.length === 0) {
+              core.setFailed('No pull request found in workflow_run event');
+              return;
+            }
+
+            const prNumber = pullRequests[0].number;
+            const allWorkflows = ['CI - Next.js', 'CI - React Router', 'CI - TanStack Start', 'CI - Nuxt'];
+
+            console.log(`Checking workflows for PR #${prNumber}`);
+
+            // Get the PR to find the head SHA
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            const headSha = pr.data.head.sha;
+
+            // Get all workflow runs for this commit
+            const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head_sha: headSha,
+              event: 'pull_request'
+            });
+
+            // Find which workflows actually ran (they may be filtered by paths)
+            const runningWorkflows = new Set();
+            const workflowStatuses = {};
+
+            for (const run of workflowRuns.workflow_runs) {
+              if (allWorkflows.includes(run.name)) {
+                runningWorkflows.add(run.name);
+                // Keep the most recent status if there are multiple runs
+                if (!workflowStatuses[run.name] || run.id > workflowStatuses[run.name].id) {
+                  workflowStatuses[run.name] = { conclusion: run.conclusion, status: run.status, id: run.id };
+                }
+              }
+            }
+
+            console.log('Workflows that ran:', Array.from(runningWorkflows));
+            console.log('Workflow statuses:', workflowStatuses);
+
+            // Check if all workflows that ran have completed successfully
+            for (const workflow of runningWorkflows) {
+              const info = workflowStatuses[workflow];
+
+              if (info.status !== 'completed') {
+                console.log(`${workflow} is still running (status: ${info.status})`);
+                core.setFailed(`${workflow} is not complete yet`);
+                return;
+              }
+
+              if (info.conclusion !== 'success') {
+                console.log(`${workflow} did not succeed (conclusion: ${info.conclusion})`);
+                core.setFailed(`${workflow} failed with conclusion: ${info.conclusion}`);
+                return;
+              }
+            }
+
+            console.log('All CI workflows have passed!');
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          # No cache - we want clean measurements
+
+      - name: Detect changed packages
+        id: detect
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Get PR number from workflow_run event
+          PR_NUMBER=$(echo '${{ toJson(github.event.workflow_run.pull_requests) }}' | jq -r '.[0].number')
+
+          # Get PR base branch
+          BASE_REF=$(gh pr view $PR_NUMBER --json baseRefName -q .baseRefName)
+          BASE="origin/$BASE_REF"
+
+          # Check which packages changed
+          PACKAGES=""
+          if git diff --name-only $BASE HEAD | grep -q "packages/starter-next-js/"; then
+            PACKAGES="$PACKAGES next"
+          fi
+          if git diff --name-only $BASE HEAD | grep -q "packages/starter-react-router/"; then
+            PACKAGES="$PACKAGES react-router"
+          fi
+          if git diff --name-only $BASE HEAD | grep -q "packages/starter-tanstack-start-react/"; then
+            PACKAGES="$PACKAGES tanstack"
+          fi
+          if git diff --name-only $BASE HEAD | grep -q "packages/starter-nuxt/"; then
+            PACKAGES="$PACKAGES nuxt"
+          fi
+
+          # If no packages changed but pnpm-lock.yaml changed, measure all
+          if [ -z "$PACKAGES" ] && git diff --name-only $BASE HEAD | grep -q "pnpm-lock.yaml"; then
+            PACKAGES="next react-router tanstack nuxt"
+          fi
+
+          echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
+          echo "Changed packages: $PACKAGES"
+
+      - name: Measure install time
+        id: install
+        if: steps.detect.outputs.packages != ''
+        run: |
+          START=$(date +%s%N)
+          pnpm install --frozen-lockfile
+          END=$(date +%s%N)
+          ELAPSED=$((($END - $START) / 1000000))
+          echo "time=$ELAPSED" >> $GITHUB_OUTPUT
+          echo "Install time: ${ELAPSED}ms"
+
+      - name: Measure Next.js builds
+        if: contains(steps.detect.outputs.packages, 'next')
+        id: next
+        run: |
+          # Cold build
+          START=$(date +%s%N)
+          pnpm build:next
+          END=$(date +%s%N)
+          COLD=$((($END - $START) / 1000000))
+
+          # Warm build
+          START=$(date +%s%N)
+          pnpm build:next
+          END=$(date +%s%N)
+          WARM=$((($END - $START) / 1000000))
+
+          echo "cold=$COLD" >> $GITHUB_OUTPUT
+          echo "warm=$WARM" >> $GITHUB_OUTPUT
+          echo "Next.js - Cold: ${COLD}ms, Warm: ${WARM}ms"
+
+      - name: Measure React Router builds
+        if: contains(steps.detect.outputs.packages, 'react-router')
+        id: react_router
+        run: |
+          # Cold build
+          START=$(date +%s%N)
+          pnpm build:react-router
+          END=$(date +%s%N)
+          COLD=$((($END - $START) / 1000000))
+
+          # Warm build
+          START=$(date +%s%N)
+          pnpm build:react-router
+          END=$(date +%s%N)
+          WARM=$((($END - $START) / 1000000))
+
+          echo "cold=$COLD" >> $GITHUB_OUTPUT
+          echo "warm=$WARM" >> $GITHUB_OUTPUT
+          echo "React Router - Cold: ${COLD}ms, Warm: ${WARM}ms"
+
+      - name: Measure TanStack Start builds
+        if: contains(steps.detect.outputs.packages, 'tanstack')
+        id: tanstack
+        run: |
+          # Cold build
+          START=$(date +%s%N)
+          pnpm build:tanstack
+          END=$(date +%s%N)
+          COLD=$((($END - $START) / 1000000))
+
+          # Warm build
+          START=$(date +%s%N)
+          pnpm build:tanstack
+          END=$(date +%s%N)
+          WARM=$((($END - $START) / 1000000))
+
+          echo "cold=$COLD" >> $GITHUB_OUTPUT
+          echo "warm=$WARM" >> $GITHUB_OUTPUT
+          echo "TanStack Start - Cold: ${COLD}ms, Warm: ${WARM}ms"
+
+      - name: Measure Nuxt builds
+        if: contains(steps.detect.outputs.packages, 'nuxt')
+        id: nuxt
+        run: |
+          # Cold build
+          START=$(date +%s%N)
+          pnpm build:nuxt
+          END=$(date +%s%N)
+          COLD=$((($END - $START) / 1000000))
+
+          # Warm build
+          START=$(date +%s%N)
+          pnpm build:nuxt
+          END=$(date +%s%N)
+          WARM=$((($END - $START) / 1000000))
+
+          echo "cold=$COLD" >> $GITHUB_OUTPUT
+          echo "warm=$WARM" >> $GITHUB_OUTPUT
+          echo "Nuxt - Cold: ${COLD}ms, Warm: ${WARM}ms"
+
+      - name: Save all CI stats
+        if: steps.detect.outputs.packages != ''
+        run: |
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # Save Next.js stats
+          if [[ "${{ steps.detect.outputs.packages }}" == *"next"* ]]; then
+            mkdir -p packages/starter-next-js
+            echo '{
+              "installTimeMs": ${{ steps.install.outputs.time }},
+              "coldBuildTimeMs": ${{ steps.next.outputs.cold }},
+              "warmBuildTimeMs": ${{ steps.next.outputs.warm }},
+              "timingMeasuredAt": "'$TIMESTAMP'",
+              "runner": "ubuntu-latest"
+            }' > packages/starter-next-js/.ci-stats.json
+          fi
+
+          # Save React Router stats
+          if [[ "${{ steps.detect.outputs.packages }}" == *"react-router"* ]]; then
+            mkdir -p packages/starter-react-router
+            echo '{
+              "installTimeMs": ${{ steps.install.outputs.time }},
+              "coldBuildTimeMs": ${{ steps.react_router.outputs.cold }},
+              "warmBuildTimeMs": ${{ steps.react_router.outputs.warm }},
+              "timingMeasuredAt": "'$TIMESTAMP'",
+              "runner": "ubuntu-latest"
+            }' > packages/starter-react-router/.ci-stats.json
+          fi
+
+          # Save TanStack Start stats
+          if [[ "${{ steps.detect.outputs.packages }}" == *"tanstack"* ]]; then
+            mkdir -p packages/starter-tanstack-start-react
+            echo '{
+              "installTimeMs": ${{ steps.install.outputs.time }},
+              "coldBuildTimeMs": ${{ steps.tanstack.outputs.cold }},
+              "warmBuildTimeMs": ${{ steps.tanstack.outputs.warm }},
+              "timingMeasuredAt": "'$TIMESTAMP'",
+              "runner": "ubuntu-latest"
+            }' > packages/starter-tanstack-start-react/.ci-stats.json
+          fi
+
+          # Save Nuxt stats
+          if [[ "${{ steps.detect.outputs.packages }}" == *"nuxt"* ]]; then
+            mkdir -p packages/starter-nuxt
+            echo '{
+              "installTimeMs": ${{ steps.install.outputs.time }},
+              "coldBuildTimeMs": ${{ steps.nuxt.outputs.cold }},
+              "warmBuildTimeMs": ${{ steps.nuxt.outputs.warm }},
+              "timingMeasuredAt": "'$TIMESTAMP'",
+              "runner": "ubuntu-latest"
+            }' > packages/starter-nuxt/.ci-stats.json
+          fi
+
+      - name: Commit all CI stats
+        if: steps.detect.outputs.packages != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Add all stats files
+          git add packages/*/.ci-stats.json
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Update CI stats for changed packages [skip ci]"
+          git push origin HEAD:${{ github.event.workflow_run.head_branch }}

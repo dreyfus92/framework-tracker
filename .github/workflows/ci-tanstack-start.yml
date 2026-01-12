@@ -51,13 +51,3 @@ jobs:
 
       - name: Build
         run: pnpm build:tanstack
-
-  measure:
-    needs: test
-    permissions:
-      contents: write
-    uses: ./.github/workflows/measure-build-times.yml
-    with:
-      package-name: starter-tanstack-start-react
-      package-path: packages/starter-tanstack-start-react
-      build-command: pnpm build:tanstack
