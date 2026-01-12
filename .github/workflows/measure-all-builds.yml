@@ -1,95 +1,25 @@
 name: Measure All Build Times
 
 on:
-  workflow_run:
-    workflows: ["CI - Next.js", "CI - React Router", "CI - TanStack Start", "CI - Nuxt"]
-    types:
-      - completed
+  pull_request:
     branches: [main]
+    paths:
+      - 'packages/starter-*/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
 
 jobs:
   measure:
-    # Only run on pull requests and if the triggering workflow succeeded
-    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     permissions:
       contents: write
-      actions: read
-      pull-requests: read
 
     steps:
-      - name: Wait for all CI workflows to complete
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const pullRequests = context.payload.workflow_run.pull_requests;
-            if (!pullRequests || pullRequests.length === 0) {
-              core.setFailed('No pull request found in workflow_run event');
-              return;
-            }
-
-            const prNumber = pullRequests[0].number;
-            const allWorkflows = ['CI - Next.js', 'CI - React Router', 'CI - TanStack Start', 'CI - Nuxt'];
-
-            console.log(`Checking workflows for PR #${prNumber}`);
-
-            // Get the PR to find the head SHA
-            const pr = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber
-            });
-            const headSha = pr.data.head.sha;
-
-            // Get all workflow runs for this commit
-            const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              head_sha: headSha,
-              event: 'pull_request'
-            });
-
-            // Find which workflows actually ran (they may be filtered by paths)
-            const runningWorkflows = new Set();
-            const workflowStatuses = {};
-
-            for (const run of workflowRuns.workflow_runs) {
-              if (allWorkflows.includes(run.name)) {
-                runningWorkflows.add(run.name);
-                // Keep the most recent status if there are multiple runs
-                if (!workflowStatuses[run.name] || run.id > workflowStatuses[run.name].id) {
-                  workflowStatuses[run.name] = { conclusion: run.conclusion, status: run.status, id: run.id };
-                }
-              }
-            }
-
-            console.log('Workflows that ran:', Array.from(runningWorkflows));
-            console.log('Workflow statuses:', workflowStatuses);
-
-            // Check if all workflows that ran have completed successfully
-            for (const workflow of runningWorkflows) {
-              const info = workflowStatuses[workflow];
-
-              if (info.status !== 'completed') {
-                console.log(`${workflow} is still running (status: ${info.status})`);
-                core.setFailed(`${workflow} is not complete yet`);
-                return;
-              }
-
-              if (info.conclusion !== 'success') {
-                console.log(`${workflow} did not succeed (conclusion: ${info.conclusion})`);
-                core.setFailed(`${workflow} failed with conclusion: ${info.conclusion}`);
-                return;
-              }
-            }
-
-            console.log('All CI workflows have passed!');
-
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - name: Setup pnpm
@@ -103,15 +33,8 @@ jobs:
 
       - name: Detect changed packages
         id: detect
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          # Get PR number from workflow_run event
-          PR_NUMBER=$(echo '${{ toJson(github.event.workflow_run.pull_requests) }}' | jq -r '.[0].number')
-
-          # Get PR base branch
-          BASE_REF=$(gh pr view $PR_NUMBER --json baseRefName -q .baseRefName)
-          BASE="origin/$BASE_REF"
+          BASE="origin/${{ github.base_ref }}"
 
           # Check which packages changed
           PACKAGES=""
@@ -295,4 +218,4 @@ jobs:
           fi
 
           git commit -m "Update CI stats for changed packages [skip ci]"
-          git push origin HEAD:${{ github.event.workflow_run.head_branch }}
+          git push origin HEAD:${{ github.head_ref }}
