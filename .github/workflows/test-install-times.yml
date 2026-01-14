@@ -1,0 +1,82 @@
+name: Test Install Times
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/test-install-times.yml'
+
+jobs:
+  test-install-times:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Measure Next.js install time
+        id: next
+        run: |
+          cp -r packages/starter-next-js /tmp/next-test
+          cd /tmp/next-test
+          START=$(date +%s%N)
+          pnpm install
+          END=$(date +%s%N)
+          ELAPSED=$((($END - $START) / 1000000))
+          echo "time=$ELAPSED" >> $GITHUB_OUTPUT
+          echo "Next.js install time: ${ELAPSED}ms"
+
+      - name: Measure React Router install time
+        id: react_router
+        run: |
+          cp -r packages/starter-react-router /tmp/react-router-test
+          cd /tmp/react-router-test
+          START=$(date +%s%N)
+          pnpm install
+          END=$(date +%s%N)
+          ELAPSED=$((($END - $START) / 1000000))
+          echo "time=$ELAPSED" >> $GITHUB_OUTPUT
+          echo "React Router install time: ${ELAPSED}ms"
+
+      - name: Measure TanStack Start install time
+        id: tanstack
+        run: |
+          cp -r packages/starter-tanstack-start-react /tmp/tanstack-test
+          cd /tmp/tanstack-test
+          START=$(date +%s%N)
+          pnpm install
+          END=$(date +%s%N)
+          ELAPSED=$((($END - $START) / 1000000))
+          echo "time=$ELAPSED" >> $GITHUB_OUTPUT
+          echo "TanStack Start install time: ${ELAPSED}ms"
+
+      - name: Measure Nuxt install time
+        id: nuxt
+        run: |
+          cp -r packages/starter-nuxt /tmp/nuxt-test
+          cd /tmp/nuxt-test
+          START=$(date +%s%N)
+          pnpm install
+          END=$(date +%s%N)
+          ELAPSED=$((($END - $START) / 1000000))
+          echo "time=$ELAPSED" >> $GITHUB_OUTPUT
+          echo "Nuxt install time: ${ELAPSED}ms"
+
+      - name: Summary
+        run: |
+          echo "## Install Time Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Framework | Install Time |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Next.js | ${{ steps.next.outputs.time }}ms |" >> $GITHUB_STEP_SUMMARY
+          echo "| React Router | ${{ steps.react_router.outputs.time }}ms |" >> $GITHUB_STEP_SUMMARY
+          echo "| TanStack Start | ${{ steps.tanstack.outputs.time }}ms |" >> $GITHUB_STEP_SUMMARY
+          echo "| Nuxt | ${{ steps.nuxt.outputs.time }}ms |" >> $GITHUB_STEP_SUMMARY
