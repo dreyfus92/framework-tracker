@@ -23,6 +23,9 @@ const stats = statsEntries.map((entry) => entry.data)
         </a>.
       </p>
 
+      <p>All stats are taken from the basic starter kits each meta-framework sets based on their current docs</p>
+
+
       <h2>Dev Time Performance</h2>
 
       <div class="table-wrapper">
@@ -47,7 +50,6 @@ const stats = statsEntries.map((entry) => entry.data)
           </tbody>
         </table>
       </div>
-
       <div class="details-section">
         <h3>Details</h3>
         <ul class="framework-links">
@@ -73,6 +75,31 @@ const stats = statsEntries.map((entry) => entry.data)
             ))
           }
         </ul>
+      </div>
+
+            <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Framework</th>
+              <th>Install</th>
+              <th>Cold Build</th>
+              <th>Warm Build</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              stats.map((framework) => (
+                <tr>
+                  <td class="framework-name">{framework.name}</td>
+                  <td>{(framework.installTimeMs / 1000).toFixed(2)}s</td>
+                  <td>{(framework.coldBuildTimeMs / 1000).toFixed(2)}s</td>
+                  <td>{(framework.warmBuildTimeMs / 1000).toFixed(2)}s</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
       </div>
 
       <h2>Runtime Performance</h2>
