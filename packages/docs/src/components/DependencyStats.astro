@@ -1,13 +1,11 @@
 ---
 import { getCollection } from 'astro:content'
-import background from '../assets/background.svg'
 
 const statsEntries = await getCollection('stats')
 const stats = statsEntries.map((entry) => entry.data)
 ---
 
 <div id="container">
-  <img id="background" src={background.src} alt="" fetchpriority="high" />
   <main>
     <section id="hero">
       <h1>Framework Tracker</h1>
@@ -23,15 +21,20 @@ const stats = statsEntries.map((entry) => entry.data)
         </a>.
       </p>
 
+      <p class="description">
+        All stats are taken from the basic starter kits each meta-framework
+        provides based on their current docs.
+      </p>
+
       <h2>Dev Time Performance</h2>
 
       <div class="table-wrapper">
-        <table>
+        <table aria-label="Dependency counts by framework">
           <thead>
             <tr>
-              <th>Framework</th>
-              <th>Prod Deps</th>
-              <th>Dev Deps</th>
+              <th scope="col">Framework</th>
+              <th scope="col">Prod Deps</th>
+              <th scope="col">Dev Deps</th>
             </tr>
           </thead>
           <tbody>
@@ -47,7 +50,6 @@ const stats = statsEntries.map((entry) => entry.data)
           </tbody>
         </table>
       </div>
-
       <div class="details-section">
         <h3>Details</h3>
         <ul class="framework-links">
@@ -75,6 +77,31 @@ const stats = statsEntries.map((entry) => entry.data)
         </ul>
       </div>
 
+      <div class="table-wrapper">
+        <table aria-label="Build and install times by framework">
+          <thead>
+            <tr>
+              <th scope="col">Framework</th>
+              <th scope="col">Install</th>
+              <th scope="col">Cold Build</th>
+              <th scope="col">Warm Build</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              stats.map((framework) => (
+                <tr>
+                  <td class="framework-name">{framework.name}</td>
+                  <td>{(framework.installTimeMs / 1000).toFixed(2)}s</td>
+                  <td>{(framework.coldBuildTimeMs / 1000).toFixed(2)}s</td>
+                  <td>{(framework.warmBuildTimeMs / 1000).toFixed(2)}s</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
       <h2>Runtime Performance</h2>
       <p class="coming-soon">Coming soon...</p>
     </section>
@@ -82,21 +109,24 @@ const stats = statsEntries.map((entry) => entry.data)
 </div>
 
 <style>
-  #background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    filter: blur(100px);
-  }
-
   #container {
     font-family:
-      Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial,
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      'Fira Sans',
+      'Droid Sans',
+      'Helvetica Neue',
       sans-serif;
     min-height: 100vh;
+    color: #213547;
+    background-color: #ffffff;
+    line-height: 1.5;
   }
 
   main {
@@ -111,10 +141,14 @@ const stats = statsEntries.map((entry) => entry.data)
   }
 
   h1 {
-    font-size: 28px;
+    font-size: 32px;
     margin-top: 0.25em;
     margin-bottom: 0.5em;
     font-weight: 700;
+    background: linear-gradient(120deg, #7cb560 0%, #cf8c3c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   h2 {
@@ -122,7 +156,7 @@ const stats = statsEntries.map((entry) => entry.data)
     margin-top: 2em;
     margin-bottom: 1em;
     font-weight: 600;
-    color: #111827;
+    color: #213547;
   }
 
   h3 {
@@ -130,14 +164,14 @@ const stats = statsEntries.map((entry) => entry.data)
     margin-top: 1.5em;
     margin-bottom: 0.75em;
     font-weight: 600;
-    color: #111827;
+    color: #213547;
   }
 
   .description {
     font-size: 16px;
     color: #4b5563;
     line-height: 1.6;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     max-width: 700px;
   }
 
@@ -159,7 +193,7 @@ const stats = statsEntries.map((entry) => entry.data)
 
   .framework-links li {
     padding: 8px 0;
-    color: #111827;
+    color: #213547;
   }
 
   .coming-soon {
@@ -171,15 +205,14 @@ const stats = statsEntries.map((entry) => entry.data)
   table {
     width: 100%;
     border-collapse: collapse;
-    background: rgba(255, 255, 255, 1);
-    border-radius: 16px;
+    background: #ffffff;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid white;
+    border: 1px solid #e5e7eb;
   }
 
   thead {
-    background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+    background: linear-gradient(120deg, #7cb560 0%, #cf8c3c 100%);
     color: white;
   }
 
@@ -207,12 +240,12 @@ const stats = statsEntries.map((entry) => entry.data)
   }
 
   tbody tr:hover {
-    background: #f9fafb;
+    background: rgba(207, 140, 60, 0.05);
   }
 
   .framework-name {
     font-weight: 500;
-    color: #111827;
+    color: #213547;
   }
 
   td:not(.framework-name) {
@@ -222,15 +255,15 @@ const stats = statsEntries.map((entry) => entry.data)
 
   .graph-link,
   .roadmap-link {
-    color: #3245ff;
+    color: #c37822;
     text-decoration: none;
     font-weight: 500;
-    transition: opacity 0.2s;
+    transition: color 0.2s;
   }
 
   .graph-link:hover,
   .roadmap-link:hover {
-    opacity: 0.7;
+    color: #cf8c3c;
     text-decoration: underline;
   }
 
@@ -240,7 +273,7 @@ const stats = statsEntries.map((entry) => entry.data)
     }
 
     h1 {
-      font-size: 24px;
+      font-size: 26px;
     }
 
     h2 {
