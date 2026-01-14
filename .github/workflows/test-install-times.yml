@@ -26,8 +26,10 @@ jobs:
         id: next
         run: |
           # Clear pnpm store for fair measurement
-          rm -rf ~/.local/share/pnpm/store
-          pnpm store prune || true
+          STORE_PATH=$(pnpm store path)
+          rm -rf "$STORE_PATH"
+          rm -rf ~/.local/share/pnpm
+          rm -rf /tmp/next-test
 
           cp -r packages/starter-next-js /tmp/next-test
           cd /tmp/next-test
@@ -42,8 +44,10 @@ jobs:
         id: react_router
         run: |
           # Clear pnpm store for fair measurement
-          rm -rf ~/.local/share/pnpm/store
-          pnpm store prune || true
+          STORE_PATH=$(pnpm store path)
+          rm -rf "$STORE_PATH"
+          rm -rf ~/.local/share/pnpm
+          rm -rf /tmp/react-router-test
 
           cp -r packages/starter-react-router /tmp/react-router-test
           cd /tmp/react-router-test
@@ -58,8 +62,10 @@ jobs:
         id: tanstack
         run: |
           # Clear pnpm store for fair measurement
-          rm -rf ~/.local/share/pnpm/store
-          pnpm store prune || true
+          STORE_PATH=$(pnpm store path)
+          rm -rf "$STORE_PATH"
+          rm -rf ~/.local/share/pnpm
+          rm -rf /tmp/tanstack-test
 
           cp -r packages/starter-tanstack-start-react /tmp/tanstack-test
           cd /tmp/tanstack-test
@@ -74,8 +80,10 @@ jobs:
         id: nuxt
         run: |
           # Clear pnpm store for fair measurement
-          rm -rf ~/.local/share/pnpm/store
-          pnpm store prune || true
+          STORE_PATH=$(pnpm store path)
+          rm -rf "$STORE_PATH"
+          rm -rf ~/.local/share/pnpm
+          rm -rf /tmp/nuxt-test
 
           cp -r packages/starter-nuxt /tmp/nuxt-test
           cd /tmp/nuxt-test
