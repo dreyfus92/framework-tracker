@@ -13,6 +13,10 @@ This project aims to provide objective, data-driven comparisons of meta-framewor
 
 See [initial-comparison-list.md](./initial-comparison-list.md) for the full list of frameworks we're tracking and the metrics we're measuring.
 
+## Getting Involved
+
+We welcome contributions from the community! Whether you're interested in adding new frameworks, improving existing metrics, or enhancing the documentation site, your help is appreciated. Check out [CONTRIBUTING.md](./CONTRIBUTING.md) for more details on how to get started.
+
 ## Project Structure
 
 This is a monorepo managed with pnpm workspaces:
