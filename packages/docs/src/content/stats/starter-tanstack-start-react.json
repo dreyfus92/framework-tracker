@@ -4,9 +4,9 @@
   "prodDependencies": 13,
   "devDependencies": 11,
   "npmGraphUrl": "https://npmgraph.js.org/?q=https://github.com/e18e/framework-tracker/blob/main/packages/starter-tanstack-start-react/package.json",
-  "installTimeMs": 9888,
-  "coldBuildTimeMs": 9095,
-  "warmBuildTimeMs": 8711,
-  "timingMeasuredAt": "2026-01-13T11:28:23Z",
+  "installTimeMs": 4292,
+  "coldBuildTimeMs": 9923,
+  "warmBuildTimeMs": 9524,
+  "timingMeasuredAt": "2026-01-15T08:27:37Z",
   "runner": "ubuntu-latest"
 }

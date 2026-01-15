@@ -1,7 +1,7 @@
 {
-  "installTimeMs": 9888,
-  "coldBuildTimeMs": 2835,
-  "warmBuildTimeMs": 2803,
-  "timingMeasuredAt": "2026-01-13T11:28:23Z",
+  "installTimeMs": 3103,
+  "coldBuildTimeMs": 3130,
+  "warmBuildTimeMs": 3110,
+  "timingMeasuredAt": "2026-01-15T08:27:37Z",
   "runner": "ubuntu-latest"
 }
