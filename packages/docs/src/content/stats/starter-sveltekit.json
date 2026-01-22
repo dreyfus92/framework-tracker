@@ -4,9 +4,9 @@
   "prodDependencies": 0,
   "devDependencies": 7,
   "npmGraphUrl": "https://npmgraph.js.org/?q=https://github.com/e18e/framework-tracker/blob/main/packages/starter-sveltekit/package.json",
-  "installTimeMs": 2410,
-  "coldBuildTimeMs": 4552,
-  "warmBuildTimeMs": 4230,
-  "timingMeasuredAt": "2026-01-22T22:54:52Z",
+  "installTimeMs": 2606,
+  "coldBuildTimeMs": 4484,
+  "warmBuildTimeMs": 4197,
+  "timingMeasuredAt": "2026-01-22T23:11:00Z",
   "runner": "ubuntu-latest"
 }
