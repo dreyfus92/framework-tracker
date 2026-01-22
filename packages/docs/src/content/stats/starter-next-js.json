@@ -4,9 +4,9 @@
   "prodDependencies": 3,
   "devDependencies": 6,
   "npmGraphUrl": "https://npmgraph.js.org/?q=https://github.com/e18e/framework-tracker/blob/main/packages/starter-next-js/package.json",
-  "installTimeMs": 6855,
-  "coldBuildTimeMs": 7735,
-  "warmBuildTimeMs": 7595,
-  "timingMeasuredAt": "2026-01-15T23:16:30Z",
+  "installTimeMs": 7307,
+  "coldBuildTimeMs": 8293,
+  "warmBuildTimeMs": 7593,
+  "timingMeasuredAt": "2026-01-22T22:54:52Z",
   "runner": "ubuntu-latest"
 }
