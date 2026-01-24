@@ -154,54 +154,36 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Download install stats artifacts
-        if: needs.setup.outputs.install-matrix != '[]' && needs.measure-install.result == 'success'
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          pattern: install-stats-*
-
-      - name: Download build time artifacts
-        if: needs.setup.outputs.build-matrix != '[]' && needs.measure-build.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          pattern: build-time-*
-          merge-multiple: false
 
       - name: Save CI stats
         run: |
           TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          FRAMEWORKS=$(cat .github/frameworks.json)
+          BASE_STATS=$(jq -n --arg ts "$TIMESTAMP" '{timingMeasuredAt: $ts, runner: "ubuntu-latest"}')
 
-          echo "$FRAMEWORKS" | jq -c '.[]' | while read -r framework; do
+          jq -c '.[]' .github/frameworks.json | while read -r framework; do
             NAME=$(echo "$framework" | jq -r '.name')
             PACKAGE=$(echo "$framework" | jq -r '.package')
             DISPLAY_NAME=$(echo "$framework" | jq -r '.displayName')
-            MEASUREMENTS=$(echo "$framework" | jq -r '.measurements | join(",")')
 
-            JSON="{ \"timingMeasuredAt\": \"$TIMESTAMP\", \"runner\": \"ubuntu-latest\""
+            STATS="$BASE_STATS"
 
-            if [[ "$MEASUREMENTS" == *"install"* ]] && [[ -f "artifacts/install-stats-$NAME/install-stats.json" ]]; then
-              INSTALL_DATA=$(cat "artifacts/install-stats-$NAME/install-stats.json")
-              INSTALL_TIME=$(echo "$INSTALL_DATA" | jq -r '.installTimeMs')
-              SIZE=$(echo "$INSTALL_DATA" | jq -r '.nodeModulesSize')
-              SIZE_PROD_ONLY=$(echo "$INSTALL_DATA" | jq -r '.nodeModulesSizeProdOnly')
-              JSON="$JSON, \"installTimeMs\": $INSTALL_TIME, \"nodeModulesSize\": $SIZE, \"nodeModulesSizeProdOnly\": $SIZE_PROD_ONLY"
+            INSTALL_FILE="artifacts/install-stats-$NAME/install-stats.json"
+            if [[ -f "$INSTALL_FILE" ]]; then
+              STATS=$(echo "$STATS" | jq --slurpfile install "$INSTALL_FILE" '. + $install[0]')
             fi
 
-            if [[ "$MEASUREMENTS" == *"build"* ]] && [[ -f "artifacts/build-time-$NAME/build-time.json" ]]; then
-              BUILD_DATA=$(cat "artifacts/build-time-$NAME/build-time.json")
-              COLD=$(echo "$BUILD_DATA" | jq -r '.cold')
-              WARM=$(echo "$BUILD_DATA" | jq -r '.warm')
-              JSON="$JSON, \"coldBuildTimeMs\": $COLD, \"warmBuildTimeMs\": $WARM"
+            BUILD_FILE="artifacts/build-time-$NAME/build-time.json"
+            if [[ -f "$BUILD_FILE" ]]; then
+              STATS=$(echo "$STATS" | jq --slurpfile build "$BUILD_FILE" '. + {coldBuildTimeMs: $build[0].cold, warmBuildTimeMs: $build[0].warm}')
             fi
 
-            JSON="$JSON }"
-
-            echo "$DISPLAY_NAME stats: $JSON"
+            echo "$DISPLAY_NAME stats: $STATS"
             mkdir -p "packages/$PACKAGE"
-            echo "$JSON" | jq '.' > "packages/$PACKAGE/.ci-stats.json"
+            echo "$STATS" > "packages/$PACKAGE/.ci-stats.json"
           done
 
       - name: Generate stats
