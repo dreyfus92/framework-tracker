@@ -70,10 +70,57 @@ jobs:
           path: /tmp/framework-test/install-time.txt
           retention-days: 1
 
-  # Build and other measurements + generate stats
+  # Build time measurements - parallel on fresh runners for fair comparison
+  measure-build:
+    needs: setup
+    if: needs.setup.outputs.build-matrix != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: ${{ fromJson(needs.setup.outputs.build-matrix) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Measure ${{ matrix.framework.displayName }} build time
+        run: |
+          cp -r packages/${{ matrix.framework.package }} /tmp/framework-test
+          cd /tmp/framework-test
+          pnpm install
+
+          START=$(date +%s%N)
+          pnpm build
+          END=$(date +%s%N)
+          COLD=$((($END - $START) / 1000000))
+
+          START=$(date +%s%N)
+          pnpm build
+          END=$(date +%s%N)
+          WARM=$((($END - $START) / 1000000))
+
+          echo "${{ matrix.framework.displayName }} - Cold: ${COLD}ms, Warm: ${WARM}ms"
+          echo "{\"cold\": $COLD, \"warm\": $WARM}" > build-time.json
+
+      - name: Upload build time result
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-time-${{ matrix.framework.name }}
+          path: /tmp/framework-test/build-time.json
+          retention-days: 1
+
+  # Collect measurements + generate stats
   generate-stats:
-    needs: [setup, measure-install]
-    if: always() && needs.setup.result == 'success'
+    needs: [setup, measure-install, measure-build]
+    if: always() && needs.setup.result == 'success' && (needs.measure-install.result == 'success' || needs.measure-build.result == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -101,29 +148,13 @@ jobs:
           path: artifacts
           pattern: install-time-*
 
-      - name: Measure build times
-        if: needs.setup.outputs.build-matrix != '[]'
-        run: |
-          BUILD_FRAMEWORKS=$(cat .github/frameworks.json | jq -c '[.[] | select(.measurements | contains(["build"]))]')
-
-          echo "$BUILD_FRAMEWORKS" | jq -c '.[]' | while read -r framework; do
-            NAME=$(echo "$framework" | jq -r '.name')
-            DISPLAY_NAME=$(echo "$framework" | jq -r '.displayName')
-            BUILD_SCRIPT=$(echo "$framework" | jq -r '.buildScript')
-
-            START=$(date +%s%N)
-            pnpm $BUILD_SCRIPT
-            END=$(date +%s%N)
-            COLD=$((($END - $START) / 1000000))
-
-            START=$(date +%s%N)
-            pnpm $BUILD_SCRIPT
-            END=$(date +%s%N)
-            WARM=$((($END - $START) / 1000000))
-
-            echo "$DISPLAY_NAME - Cold: ${COLD}ms, Warm: ${WARM}ms"
-            echo "{\"cold\": $COLD, \"warm\": $WARM}" > "/tmp/$NAME-build-time.json"
-          done
+      - name: Download build time artifacts
+        if: needs.setup.outputs.build-matrix != '[]' && needs.measure-build.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: build-time-*
+          merge-multiple: false
 
       - name: Save CI stats
         run: |
@@ -143,8 +174,8 @@ jobs:
               JSON="$JSON, \"installTimeMs\": $INSTALL_TIME"
             fi
 
-            if [[ "$MEASUREMENTS" == *"build"* ]] && [[ -f "/tmp/$NAME-build-time.json" ]]; then
-              BUILD_DATA=$(cat "/tmp/$NAME-build-time.json")
+            if [[ "$MEASUREMENTS" == *"build"* ]] && [[ -f "artifacts/build-time-$NAME/build-time.json" ]]; then
+              BUILD_DATA=$(cat "artifacts/build-time-$NAME/build-time.json")
               COLD=$(echo "$BUILD_DATA" | jq -r '.cold')
               WARM=$(echo "$BUILD_DATA" | jq -r '.warm')
               JSON="$JSON, \"coldBuildTimeMs\": $COLD, \"warmBuildTimeMs\": $WARM"
