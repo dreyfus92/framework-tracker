@@ -9,7 +9,7 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "tsc --noEmit",
+    "type-check": "astro check",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
