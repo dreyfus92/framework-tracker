@@ -4,9 +4,9 @@
   "prodDependencies": 3,
   "devDependencies": 6,
   "package": "starter-next-js",
-  "installTimeMs": 30997,
-  "coldBuildTimeMs": 7396,
-  "warmBuildTimeMs": 7247,
-  "timingMeasuredAt": "2026-01-24T09:51:21Z",
+  "installTimeMs": 9250,
+  "coldBuildTimeMs": 7536,
+  "warmBuildTimeMs": 8089,
+  "timingMeasuredAt": "2026-01-25T11:07:33Z",
   "runner": "ubuntu-latest"
 }

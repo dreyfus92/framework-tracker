@@ -4,9 +4,9 @@
   "prodDependencies": 3,
   "devDependencies": 2,
   "package": "starter-nuxt",
-  "installTimeMs": 6742,
-  "coldBuildTimeMs": 6582,
-  "warmBuildTimeMs": 6370,
-  "timingMeasuredAt": "2026-01-24T09:51:21Z",
+  "installTimeMs": 7787,
+  "coldBuildTimeMs": 6697,
+  "warmBuildTimeMs": 6438,
+  "timingMeasuredAt": "2026-01-25T11:07:33Z",
   "runner": "ubuntu-latest"
 }
