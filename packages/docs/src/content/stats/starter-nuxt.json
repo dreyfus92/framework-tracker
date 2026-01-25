@@ -8,5 +8,7 @@
   "coldBuildTimeMs": 6582,
   "warmBuildTimeMs": 6370,
   "timingMeasuredAt": "2026-01-24T09:51:21Z",
-  "runner": "ubuntu-latest"
+  "runner": "ubuntu-latest",
+  "nodeModulesSize": 0,
+  "nodeModulesSizeProdOnly": 0
 }

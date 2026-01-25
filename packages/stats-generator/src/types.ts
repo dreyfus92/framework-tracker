@@ -14,6 +14,8 @@ export interface CIStats {
   coldBuildTimeMs?: number
   warmBuildTimeMs?: number
   testTimeMs?: number
+  nodeModulesSize?: number
+  nodeModulesSizeProdOnly?: number
   timingMeasuredAt?: string
   runner?: string
 }

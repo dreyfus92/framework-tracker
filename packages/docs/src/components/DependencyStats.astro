@@ -3,6 +3,14 @@ import { getCollection } from 'astro:content'
 
 const statsEntries = await getCollection('stats')
 const stats = statsEntries.map((entry) => entry.data)
+
+const BYTES_PER_KB = 1024
+const BYTES_PER_MB = BYTES_PER_KB * BYTES_PER_KB
+
+function formatBytesToMB(bytes: number): string {
+  const mb = bytes / BYTES_PER_MB
+  return `${mb.toFixed(2)}MB`
+}
 ---
 
 <div id="container">
@@ -35,6 +43,8 @@ const stats = statsEntries.map((entry) => entry.data)
               <th scope="col">Framework</th>
               <th scope="col">Prod Deps</th>
               <th scope="col">Dev Deps</th>
+              <th scope="col">Size</th>
+              <th scope="col">Size (Prod Only)</th>
               <th scope="col">Graph</th>
             </tr>
           </thead>
@@ -45,6 +55,8 @@ const stats = statsEntries.map((entry) => entry.data)
                   <td class="framework-name">{framework.name}</td>
                   <td>{framework.prodDependencies}</td>
                   <td>{framework.devDependencies}</td>
+                  <td>{formatBytesToMB(framework.nodeModulesSize)}</td>
+                  <td>{formatBytesToMB(framework.nodeModulesSizeProdOnly)}</td>
                   <td>
                     <a
                       href={`https://npmgraph.js.org/?q=https://github.com/e18e/framework-tracker/blob/main/packages/${framework.package}/package.json`}
