@@ -52,28 +52,88 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Measure ${{ matrix.framework.displayName }} install time
+      - name: Measure ${{ matrix.framework.displayName }} install time and sizes
         run: |
           cp -r packages/${{ matrix.framework.package }} /tmp/framework-test
           cd /tmp/framework-test
+
+          # Measure install time (full install with dev dependencies)
           START=$(date +%s%N)
           pnpm install
           END=$(date +%s%N)
-          ELAPSED=$((($END - $START) / 1000000))
-          echo "${{ matrix.framework.displayName }} install time: ${ELAPSED}ms"
-          echo "$ELAPSED" > install-time.txt
+          INSTALL_TIME=$((($END - $START) / 1000000))
 
-      - name: Upload install time result
+          # Measure node_modules size (in bytes)
+          SIZE=$(du -sb node_modules | cut -f1)
+
+          # Clean and do production-only install
+          rm -rf node_modules
+          pnpm install --prod
+
+          # Measure node_modules size production only (in bytes)
+          SIZE_PROD_ONLY=$(du -sb node_modules | cut -f1)
+
+          echo "${{ matrix.framework.displayName }} - Install: ${INSTALL_TIME}ms, Size: ${SIZE} bytes, Prod only: ${SIZE_PROD_ONLY} bytes"
+          echo "{\"installTimeMs\": $INSTALL_TIME, \"nodeModulesSize\": $SIZE, \"nodeModulesSizeProdOnly\": $SIZE_PROD_ONLY}" > install-stats.json
+
+      - name: Upload install stats result
         uses: actions/upload-artifact@v4
         with:
-          name: install-time-${{ matrix.framework.name }}
-          path: /tmp/framework-test/install-time.txt
+          name: install-stats-${{ matrix.framework.name }}
+          path: /tmp/framework-test/install-stats.json
           retention-days: 1
 
-  # Build and other measurements + generate stats
+  # Build time measurements - parallel on fresh runners for fair comparison
+  measure-build:
+    needs: setup
+    if: needs.setup.outputs.build-matrix != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: ${{ fromJson(needs.setup.outputs.build-matrix) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Measure ${{ matrix.framework.displayName }} build time
+        run: |
+          cp -r packages/${{ matrix.framework.package }} /tmp/framework-test
+          cd /tmp/framework-test
+          pnpm install
+
+          START=$(date +%s%N)
+          pnpm build
+          END=$(date +%s%N)
+          COLD=$((($END - $START) / 1000000))
+
+          START=$(date +%s%N)
+          pnpm build
+          END=$(date +%s%N)
+          WARM=$((($END - $START) / 1000000))
+
+          echo "${{ matrix.framework.displayName }} - Cold: ${COLD}ms, Warm: ${WARM}ms"
+          echo "{\"cold\": $COLD, \"warm\": $WARM}" > build-time.json
+
+      - name: Upload build time result
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-time-${{ matrix.framework.name }}
+          path: /tmp/framework-test/build-time.json
+          retention-days: 1
+
+  # Collect measurements + generate stats
   generate-stats:
-    needs: [setup, measure-install]
-    if: always() && needs.setup.result == 'success'
+    needs: [setup, measure-install, measure-build]
+    if: always() && needs.setup.result == 'success' && (needs.measure-install.result == 'success' || needs.measure-build.result == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -94,67 +154,36 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Download install time artifacts
-        if: needs.setup.outputs.install-matrix != '[]' && needs.measure-install.result == 'success'
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          pattern: install-time-*
-
-      - name: Measure build times
-        if: needs.setup.outputs.build-matrix != '[]'
-        run: |
-          BUILD_FRAMEWORKS=$(cat .github/frameworks.json | jq -c '[.[] | select(.measurements | contains(["build"]))]')
-
-          echo "$BUILD_FRAMEWORKS" | jq -c '.[]' | while read -r framework; do
-            NAME=$(echo "$framework" | jq -r '.name')
-            DISPLAY_NAME=$(echo "$framework" | jq -r '.displayName')
-            BUILD_SCRIPT=$(echo "$framework" | jq -r '.buildScript')
-
-            START=$(date +%s%N)
-            pnpm $BUILD_SCRIPT
-            END=$(date +%s%N)
-            COLD=$((($END - $START) / 1000000))
-
-            START=$(date +%s%N)
-            pnpm $BUILD_SCRIPT
-            END=$(date +%s%N)
-            WARM=$((($END - $START) / 1000000))
-
-            echo "$DISPLAY_NAME - Cold: ${COLD}ms, Warm: ${WARM}ms"
-            echo "{\"cold\": $COLD, \"warm\": $WARM}" > "/tmp/$NAME-build-time.json"
-          done
 
       - name: Save CI stats
         run: |
           TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          FRAMEWORKS=$(cat .github/frameworks.json)
+          BASE_STATS=$(jq -n --arg ts "$TIMESTAMP" '{timingMeasuredAt: $ts, runner: "ubuntu-latest"}')
 
-          echo "$FRAMEWORKS" | jq -c '.[]' | while read -r framework; do
+          jq -c '.[]' .github/frameworks.json | while read -r framework; do
             NAME=$(echo "$framework" | jq -r '.name')
             PACKAGE=$(echo "$framework" | jq -r '.package')
             DISPLAY_NAME=$(echo "$framework" | jq -r '.displayName')
-            MEASUREMENTS=$(echo "$framework" | jq -r '.measurements | join(",")')
 
-            JSON="{ \"timingMeasuredAt\": \"$TIMESTAMP\", \"runner\": \"ubuntu-latest\""
+            STATS="$BASE_STATS"
 
-            if [[ "$MEASUREMENTS" == *"install"* ]] && [[ -f "artifacts/install-time-$NAME/install-time.txt" ]]; then
-              INSTALL_TIME=$(cat "artifacts/install-time-$NAME/install-time.txt")
-              JSON="$JSON, \"installTimeMs\": $INSTALL_TIME"
+            INSTALL_FILE="artifacts/install-stats-$NAME/install-stats.json"
+            if [[ -f "$INSTALL_FILE" ]]; then
+              STATS=$(echo "$STATS" | jq --slurpfile install "$INSTALL_FILE" '. + $install[0]')
             fi
 
-            if [[ "$MEASUREMENTS" == *"build"* ]] && [[ -f "/tmp/$NAME-build-time.json" ]]; then
-              BUILD_DATA=$(cat "/tmp/$NAME-build-time.json")
-              COLD=$(echo "$BUILD_DATA" | jq -r '.cold')
-              WARM=$(echo "$BUILD_DATA" | jq -r '.warm')
-              JSON="$JSON, \"coldBuildTimeMs\": $COLD, \"warmBuildTimeMs\": $WARM"
+            BUILD_FILE="artifacts/build-time-$NAME/build-time.json"
+            if [[ -f "$BUILD_FILE" ]]; then
+              STATS=$(echo "$STATS" | jq --slurpfile build "$BUILD_FILE" '. + {coldBuildTimeMs: $build[0].cold, warmBuildTimeMs: $build[0].warm}')
             fi
 
-            JSON="$JSON }"
-
-            echo "$DISPLAY_NAME stats: $JSON"
+            echo "$DISPLAY_NAME stats: $STATS"
             mkdir -p "packages/$PACKAGE"
-            echo "$JSON" | jq '.' > "packages/$PACKAGE/.ci-stats.json"
+            echo "$STATS" > "packages/$PACKAGE/.ci-stats.json"
           done
 
       - name: Generate stats

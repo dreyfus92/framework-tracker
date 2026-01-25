@@ -8,5 +8,7 @@
   "runner": "ubuntu-latest",
   "installTimeMs": 3041,
   "coldBuildTimeMs": 2479,
-  "warmBuildTimeMs": 2422
+  "warmBuildTimeMs": 2422,
+  "nodeModulesSize": 0,
+  "nodeModulesSizeProdOnly": 0
 }
