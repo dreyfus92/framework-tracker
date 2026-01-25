@@ -4,11 +4,11 @@
   "type": "starter-kit",
   "prodDependencies": 1,
   "devDependencies": 0,
-  "timingMeasuredAt": "2026-01-25T11:07:33Z",
+  "timingMeasuredAt": "2026-01-25T11:15:55Z",
   "runner": "ubuntu-latest",
-  "installTimeMs": 3041,
-  "coldBuildTimeMs": 2479,
-  "warmBuildTimeMs": 2422,
-  "nodeModulesSize": 0,
-  "nodeModulesSizeProdOnly": 0
+  "installTimeMs": 3396,
+  "coldBuildTimeMs": 2405,
+  "warmBuildTimeMs": 2060,
+  "nodeModulesSize": 130822051,
+  "nodeModulesSizeProdOnly": 130799869
 }

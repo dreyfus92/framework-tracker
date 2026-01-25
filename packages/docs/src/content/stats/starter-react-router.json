@@ -4,11 +4,11 @@
   "prodDependencies": 6,
   "devDependencies": 8,
   "package": "starter-react-router",
-  "installTimeMs": 2899,
-  "coldBuildTimeMs": 2983,
-  "warmBuildTimeMs": 3007,
-  "timingMeasuredAt": "2026-01-24T09:51:21Z",
+  "installTimeMs": 2903,
+  "coldBuildTimeMs": 3152,
+  "warmBuildTimeMs": 2701,
+  "timingMeasuredAt": "2026-01-25T11:15:55Z",
   "runner": "ubuntu-latest",
-  "nodeModulesSize": 0,
-  "nodeModulesSizeProdOnly": 0
+  "nodeModulesSize": 94085677,
+  "nodeModulesSizeProdOnly": 14206232
 }

@@ -4,11 +4,11 @@
   "prodDependencies": 3,
   "devDependencies": 6,
   "package": "starter-next-js",
-  "installTimeMs": 30997,
-  "coldBuildTimeMs": 7396,
-  "warmBuildTimeMs": 7247,
-  "timingMeasuredAt": "2026-01-24T09:51:21Z",
+  "installTimeMs": 7029,
+  "coldBuildTimeMs": 7158,
+  "warmBuildTimeMs": 6932,
+  "timingMeasuredAt": "2026-01-25T11:15:55Z",
   "runner": "ubuntu-latest",
-  "nodeModulesSize": 0,
-  "nodeModulesSizeProdOnly": 0
+  "nodeModulesSize": 525877392,
+  "nodeModulesSizeProdOnly": 425378809
 }

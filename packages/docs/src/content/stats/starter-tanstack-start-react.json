@@ -4,11 +4,11 @@
   "prodDependencies": 13,
   "devDependencies": 11,
   "package": "starter-tanstack-start-react",
-  "installTimeMs": 4297,
-  "coldBuildTimeMs": 9738,
-  "warmBuildTimeMs": 9273,
-  "timingMeasuredAt": "2026-01-24T09:51:21Z",
+  "installTimeMs": 4766,
+  "coldBuildTimeMs": 8268,
+  "warmBuildTimeMs": 7802,
+  "timingMeasuredAt": "2026-01-25T11:15:55Z",
   "runner": "ubuntu-latest",
-  "nodeModulesSize": 0,
-  "nodeModulesSizeProdOnly": 0
+  "nodeModulesSize": 194597669,
+  "nodeModulesSizeProdOnly": 170625241
 }

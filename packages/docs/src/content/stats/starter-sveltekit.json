@@ -4,11 +4,11 @@
   "prodDependencies": 0,
   "devDependencies": 7,
   "package": "starter-sveltekit",
-  "installTimeMs": 2683,
-  "coldBuildTimeMs": 4421,
-  "warmBuildTimeMs": 4116,
-  "timingMeasuredAt": "2026-01-24T09:51:21Z",
+  "installTimeMs": 2749,
+  "coldBuildTimeMs": 4673,
+  "warmBuildTimeMs": 3798,
+  "timingMeasuredAt": "2026-01-25T11:15:55Z",
   "runner": "ubuntu-latest",
-  "nodeModulesSize": 0,
-  "nodeModulesSizeProdOnly": 0
+  "nodeModulesSize": 57337636,
+  "nodeModulesSizeProdOnly": 722
 }
