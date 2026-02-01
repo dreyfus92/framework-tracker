@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from './mock-http.ts'
 
 export type SSRHandler = (
   req: IncomingMessage,
-  res: ServerResponse
+  res: ServerResponse,
 ) => void | Promise<void>
 
 export interface SSRBenchmarkResult {

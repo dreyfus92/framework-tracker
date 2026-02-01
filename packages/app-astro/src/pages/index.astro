@@ -14,12 +14,14 @@ const entries = await testData()
   <body>
     <table>
       <tbody>
-        {entries.map((entry) => (
-          <tr>
-            <td>{entry.id}</td>
-            <td>{entry.name}</td>
-          </tr>
-        ))}
+        {
+          entries.map((entry) => (
+            <tr>
+              <td>{entry.id}</td>
+              <td>{entry.name}</td>
+            </tr>
+          ))
+        }
       </tbody>
     </table>
   </body>

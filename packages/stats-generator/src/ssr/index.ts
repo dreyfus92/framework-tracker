@@ -12,7 +12,7 @@ interface SSRFrameworkConfig {
   buildHandler: () => Promise<
     (
       req: import('./mock-http.ts').IncomingMessage,
-      res: import('./mock-http.ts').ServerResponse
+      res: import('./mock-http.ts').ServerResponse,
     ) => void | Promise<void>
   >
 }
@@ -39,7 +39,7 @@ export async function runAllSSRBenchmarks(): Promise<SSRBenchmarkResult[]> {
       displayName: config.displayName,
       package: config.package,
       handler: await config.buildHandler(),
-    }))
+    })),
   )
 
   return runBenchmark(handlers)

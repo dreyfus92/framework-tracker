@@ -151,7 +151,7 @@ export class ServerResponse extends Writable {
 
   writeEarlyHints(
     _headers: Record<string, string | string[]>,
-    cb?: () => void
+    cb?: () => void,
   ): void {
     if (typeof cb === 'function') {
       cb()

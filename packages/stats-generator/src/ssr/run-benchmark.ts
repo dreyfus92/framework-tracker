@@ -11,7 +11,7 @@ interface HandlerConfig {
 
 async function runHandler(
   handler: SSRHandler,
-  collect = false
+  collect = false,
 ): Promise<ServerResponse> {
   const request = new IncomingMessage()
   const response = new ServerResponse(request, collect)
@@ -25,7 +25,7 @@ async function runHandler(
 function getDuplicationFactor(body: string): number {
   const samples: Record<string, number> = {}
   const matches = body.matchAll(
-    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
   )
 
   for (const match of matches) {
@@ -38,7 +38,7 @@ function getDuplicationFactor(body: string): number {
 }
 
 export async function runBenchmark(
-  handlers: HandlerConfig[]
+  handlers: HandlerConfig[],
 ): Promise<SSRBenchmarkResult[]> {
   const bench = new Bench({
     time: 10_000,

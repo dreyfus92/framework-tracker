@@ -1,4 +1,9 @@
-export type MeasurementType = 'install' | 'build' | 'test' | 'dependencies' | 'ssr'
+export type MeasurementType =
+  | 'install'
+  | 'build'
+  | 'test'
+  | 'dependencies'
+  | 'ssr'
 
 export type FrameworkType = 'starter' | 'app'
 
