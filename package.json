@@ -28,7 +28,6 @@
     "build:app-astro": "pnpm --filter app-astro build",
     "build:app-nuxt": "pnpm --filter app-nuxt build",
     "collect:stats": "pnpm --filter @framework-tracker/stats-generator collect",
-    "run:ssr-benchmarks": "pnpm --filter @framework-tracker/stats-generator run:ssr",
     "lint": "pnpm -r --parallel lint",
     "lint:fix": "pnpm -r --parallel lint:fix",
     "format": "prettier --write .",

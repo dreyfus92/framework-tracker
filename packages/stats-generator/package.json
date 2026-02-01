@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "collect": "node --experimental-strip-types src/collect-stats.ts",
-    "run:ssr": "node --experimental-strip-types src/run-ssr-benchmarks.ts",
+    "run:ssr": "node --experimental-strip-types src/run-ssr-benchmark.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit"

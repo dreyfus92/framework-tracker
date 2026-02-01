@@ -32,17 +32,28 @@ const SSR_FRAMEWORKS: SSRFrameworkConfig[] = [
   },
 ]
 
-export async function runAllSSRBenchmarks(): Promise<SSRBenchmarkResult[]> {
-  const handlers = await Promise.all(
-    SSR_FRAMEWORKS.map(async (config) => ({
+export async function runSSRBenchmark(
+  packageName: string,
+): Promise<SSRBenchmarkResult> {
+  const config = SSR_FRAMEWORKS.find((f) => f.package === packageName)
+
+  if (!config) {
+    throw new Error(
+      `Unknown SSR package: ${packageName}. Available: ${SSR_FRAMEWORKS.map((f) => f.package).join(', ')}`,
+    )
+  }
+
+  const handler = await config.buildHandler()
+  const results = await runBenchmark([
+    {
       name: config.name,
       displayName: config.displayName,
       package: config.package,
-      handler: await config.buildHandler(),
-    })),
-  )
+      handler,
+    },
+  ])
 
-  return runBenchmark(handlers)
+  return results[0]
 }
 
 export function toSSRStats(result: SSRBenchmarkResult): SSRStats {

@@ -140,11 +140,15 @@ jobs:
           path: /tmp/framework-test/build-time.json
           retention-days: 1
 
-  # SSR benchmark measurements
+  # SSR benchmark measurements - parallel on fresh runners for fair comparison
   measure-ssr:
     needs: setup
     if: needs.setup.outputs.ssr-matrix != '[]'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: ${{ fromJson(needs.setup.outputs.ssr-matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -161,22 +165,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build SSR apps
-        run: |
-          pnpm build:app-astro
-          pnpm build:app-nuxt
+      - name: Build ${{ matrix.framework.displayName }}
+        run: pnpm ${{ matrix.framework.buildScript }}
 
-      - name: Run SSR benchmarks
-        run: pnpm run:ssr-benchmarks
+      - name: Run ${{ matrix.framework.displayName }} SSR benchmark
+        run: pnpm --filter @framework-tracker/stats-generator run:ssr ${{ matrix.framework.package }}
         env:
           RUNNER_NAME: ubuntu-latest
 
-      - name: Upload SSR stats
+      - name: Upload SSR stats result
         uses: actions/upload-artifact@v4
         with:
-          name: ssr-stats
-          path: |
-            packages/app-*/.ci-stats.json
+          name: ssr-stats-${{ matrix.framework.name }}
+          path: packages/${{ matrix.framework.package }}/.ci-stats.json
           retention-days: 1
 
   # Collect measurements + generate stats
@@ -238,9 +239,9 @@ jobs:
 
             # App framework stats (SSR benchmarks)
             if [[ "$TYPE" == "app" ]]; then
-              SSR_FILE="artifacts/ssr-stats/packages/$PACKAGE/.ci-stats.json"
+              SSR_FILE="artifacts/ssr-stats-$NAME/packages/$PACKAGE/.ci-stats.json"
               if [[ -f "$SSR_FILE" ]]; then
-                STATS=$(cat "$SSR_FILE")
+                STATS=$(echo "$STATS" | jq --slurpfile ssr "$SSR_FILE" '. + {ssrOpsPerSec: $ssr[0].ssrOpsPerSec, ssrAvgLatencyMs: $ssr[0].ssrAvgLatencyMs, ssrSamples: $ssr[0].ssrSamples, ssrBodySizeKb: $ssr[0].ssrBodySizeKb, ssrDuplicationFactor: $ssr[0].ssrDuplicationFactor}')
               fi
             fi
 
