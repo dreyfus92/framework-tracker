@@ -1,11 +1,13 @@
 {
-  "timingMeasuredAt": "2026-02-01T22:44:15Z",
+  "timingMeasuredAt": "2026-01-31T22:05:12Z",
   "runner": "ubuntu-latest",
   "frameworkVersion": "1.157.18",
-  "installTimeMs": 4696,
-  "nodeModulesSize": 194697809,
-  "nodeModulesSizeProdOnly": 170652326,
-  "coldBuildTimeMs": 7843,
-  "warmBuildTimeMs": 7367,
+  "avgInstallTimeMs": 4357.6,
+  "minInstallTimeMs": 4176,
+  "maxInstallTimeMs": 4818,
+  "nodeModulesSize": 194670718,
+  "nodeModulesSizeProdOnly": 170648706,
+  "coldBuildTimeMs": 9341,
+  "warmBuildTimeMs": 8311,
   "buildOutputSize": 1924499
 }
