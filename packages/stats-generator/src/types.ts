@@ -12,12 +12,14 @@ export interface FrameworkConfig {
   displayName: string
   type: FrameworkType
   package: string
+  frameworkPackage?: string
   buildScript?: string
   testScript?: string
   measurements: MeasurementType[]
 }
 
 export interface CIStats {
+  frameworkVersion?: string
   avgInstallTimeMs?: number
   minInstallTimeMs?: number
   maxInstallTimeMs?: number

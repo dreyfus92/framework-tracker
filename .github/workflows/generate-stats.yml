@@ -263,7 +263,8 @@ jobs:
             if [[ "$TYPE" == "app" ]]; then
               SSR_FILE="artifacts/ssr-stats-$NAME/packages/$PACKAGE/.ci-stats.json"
               if [[ -f "$SSR_FILE" ]]; then
-                STATS=$(echo "$STATS" | jq --slurpfile ssr "$SSR_FILE" '. + {ssrOpsPerSec: $ssr[0].ssrOpsPerSec, ssrAvgLatencyMs: $ssr[0].ssrAvgLatencyMs, ssrSamples: $ssr[0].ssrSamples, ssrBodySizeKb: $ssr[0].ssrBodySizeKb, ssrDuplicationFactor: $ssr[0].ssrDuplicationFactor}')
+                STATS=$(echo "$STATS" | jq --slurpfile ssr "$SSR_FILE" '. + {frameworkVersion: $ssr[0].frameworkVersion, ssrOpsPerSec: $ssr[0].ssrOpsPerSec, ssrAvgLatencyMs: $ssr[0].ssrAvgLatencyMs, ssrSamples: $ssr[0].ssrSamples, ssrBodySizeKb: $ssr[0].ssrBodySizeKb, ssrDuplicationFactor: $ssr[0].ssrDuplicationFactor}')
+                FRAMEWORK_VERSION=$(jq -r '.frameworkVersion // empty' "$SSR_FILE")
               fi
             fi
 
@@ -273,7 +274,7 @@ jobs:
             mkdir -p "packages/$PACKAGE"
             mkdir -p "packages/$PACKAGE/stats"
 
-            # Save to versioned file if we have a version (starters only)
+            # Save to versioned file if we have a version
             if [[ -n "$FRAMEWORK_VERSION" && "$FRAMEWORK_VERSION" != "null" ]]; then
               echo "$STATS" > "packages/$PACKAGE/stats/$FRAMEWORK_VERSION.json"
             fi
