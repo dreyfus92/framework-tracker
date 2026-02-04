@@ -4,16 +4,16 @@
   "type": "starter-kit",
   "prodDependencies": 1,
   "devDependencies": 0,
-  "timingMeasuredAt": "2026-02-03T12:47:39Z",
+  "timingMeasuredAt": "2026-02-03T23:24:05Z",
   "runner": "ubuntu-latest",
   "installTimeMs": 3160,
-  "coldBuildTimeMs": 2521,
-  "warmBuildTimeMs": 2325,
+  "coldBuildTimeMs": 2382,
+  "warmBuildTimeMs": 2097,
   "buildOutputSize": 11457,
   "nodeModulesSize": 130977492,
   "nodeModulesSizeProdOnly": 130955314,
   "frameworkVersion": "5.17.1",
-  "avgInstallTimeMs": 3098,
-  "minInstallTimeMs": 2929,
-  "maxInstallTimeMs": 3273
+  "avgInstallTimeMs": 3539.2,
+  "minInstallTimeMs": 3356,
+  "maxInstallTimeMs": 3685
 }
