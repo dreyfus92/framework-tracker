@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process'
-import { cpSync, rmSync, existsSync } from 'node:fs'
+import { cpSync, rmSync, existsSync, copyFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { packagesDir } from './constants.ts'
@@ -10,6 +10,8 @@ import {
   parseArgs,
 } from './utils.ts'
 import type { InstallStats } from './types.ts'
+
+const rootDir = join(packagesDir, '..')
 
 function execCommand(command: string, cwd: string): string {
   return execSync(command, {
@@ -30,18 +32,13 @@ function cleanForFreshInstall(cwd: string): void {
   } catch {
     // Ignore if prune fails
   }
-
-  const lockfilePath = join(cwd, 'pnpm-lock.yaml')
-  if (existsSync(lockfilePath)) {
-    rmSync(lockfilePath, { force: true })
-  }
 }
 
 function measureInstallTime(cwd: string): number {
   cleanForFreshInstall(cwd)
 
   const start = performance.now()
-  execCommand('pnpm install', cwd)
+  execCommand('pnpm install --no-frozen-lockfile', cwd)
   const end = performance.now()
 
   return Math.round(end - start)
@@ -91,6 +88,11 @@ async function main() {
   console.info(`Copying ${packageName} to ${tempDir}...`)
   cpSync(sourceDir, tempDir, { recursive: true })
 
+  const rootLockfile = join(rootDir, 'pnpm-lock.yaml')
+  if (existsSync(rootLockfile)) {
+    copyFileSync(rootLockfile, join(tempDir, 'pnpm-lock.yaml'))
+  }
+
   try {
     const installTimes: number[] = []
 
@@ -119,7 +121,7 @@ async function main() {
     console.info(`node_modules size: ${nodeModulesSize} bytes`)
 
     rmSync(nodeModulesPath, { recursive: true, force: true })
-    execCommand('pnpm install --prod', tempDir)
+    execCommand('pnpm install --prod --no-frozen-lockfile', tempDir)
 
     const nodeModulesSizeProdOnly = getDirectorySize(nodeModulesPath)
     console.info(
