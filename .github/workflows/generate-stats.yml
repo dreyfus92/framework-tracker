@@ -179,7 +179,7 @@ jobs:
         run: find artifacts -type f -name "*.json" 2>/dev/null || echo "No artifacts found"
 
       - name: Save CI stats
-        run: pnpm --filter @framework-tracker/stats-generator save:ci-stats artifacts
+        run: pnpm --filter @framework-tracker/stats-generator save:ci-stats $GITHUB_WORKSPACE/artifacts
         env:
           RUNNER_LABEL: ubuntu-latest
 
