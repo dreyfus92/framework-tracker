@@ -2,11 +2,12 @@
   "name": "Nuxt SSR",
   "package": "app-nuxt",
   "type": "ssr-app",
-  "ssrOpsPerSec": 509,
-  "ssrAvgLatencyMs": 1.964,
-  "ssrSamples": 5093,
+  "ssrOpsPerSec": 325,
+  "ssrAvgLatencyMs": 3.075,
+  "ssrSamples": 3253,
   "ssrBodySizeKb": 201.18,
   "ssrDuplicationFactor": 2,
-  "timingMeasuredAt": "2026-02-03T23:24:05Z",
-  "runner": "ubuntu-latest"
+  "timingMeasuredAt": "2026-02-06T12:46:59.033Z",
+  "runner": "ubuntu-latest",
+  "frameworkVersion": "4.2.2"
 }
