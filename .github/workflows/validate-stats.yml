@@ -34,11 +34,14 @@ jobs:
           set -e
 
           echo "=== Running SSR benchmarks ==="
-          for pkg in app-astro app-nuxt; do
-            echo "Building $pkg..."
-            pnpm build:$pkg
-            echo "Running SSR benchmark for $pkg..."
-            pnpm --filter @framework-tracker/stats-generator run:ssr $pkg
+          FRAMEWORKS=$(cat .github/frameworks.json)
+          echo "$FRAMEWORKS" | jq -c '.[] | select(.type == "app")' | while read -r framework; do
+            PKG=$(echo "$framework" | jq -r '.package')
+            BUILD_SCRIPT=$(echo "$framework" | jq -r '.buildScript')
+            echo "Building $PKG..."
+            pnpm $BUILD_SCRIPT
+            echo "Running SSR benchmark for $PKG..."
+            pnpm --filter @framework-tracker/stats-generator run:ssr $PKG
           done
 
           echo ""
