@@ -1,0 +1,10 @@
+{
+  "timingMeasuredAt": "2026-02-06T22:33:22.429Z",
+  "runner": "local",
+  "frameworkVersion": "16.1.1",
+  "ssrOpsPerSec": 68,
+  "ssrAvgLatencyMs": 14.799,
+  "ssrSamples": 676,
+  "ssrBodySizeKb": 336.38,
+  "ssrDuplicationFactor": 2.49
+}

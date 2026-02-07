@@ -126,5 +126,15 @@
     "buildScript": "build:app-sveltekit",
     "buildOutputDir": "build",
     "measurements": [{ "type": "ssr" }]
+  },
+  {
+    "name": "next-ssr",
+    "displayName": "Next.js SSR",
+    "type": "app",
+    "package": "app-next-js",
+    "frameworkPackage": "next",
+    "buildScript": "build:app-next-js",
+    "buildOutputDir": ".next",
+    "measurements": [{ "type": "ssr" }]
   }
 ]

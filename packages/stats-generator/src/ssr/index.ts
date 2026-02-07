@@ -2,6 +2,7 @@ import { runBenchmark } from './run-benchmark.ts'
 import { buildAstroHandler } from './handlers/astro.ts'
 import { buildNuxtHandler } from './handlers/nuxt.ts'
 import { buildSvelteKitHandler } from './handlers/sveltekit.ts'
+import { buildNextJSHandler } from './handlers/nextjs.ts'
 import type { SSRBenchmarkResult, SSRStats } from './types.ts'
 
 export type { SSRBenchmarkResult, SSRStats } from './types.ts'
@@ -36,6 +37,12 @@ const SSR_FRAMEWORKS: SSRFrameworkConfig[] = [
     displayName: 'SvelteKit SSR',
     package: 'app-sveltekit',
     buildHandler: buildSvelteKitHandler,
+  },
+  {
+    name: 'next-ssr',
+    displayName: 'Next.js SSR',
+    package: 'app-next-js',
+    buildHandler: buildNextJSHandler,
   },
 ]
 

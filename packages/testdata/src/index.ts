@@ -1,1 +1,1 @@
-export { testData, type TableEntry } from './ssr.js'
+export { testData, type TableEntry } from './ssr'
