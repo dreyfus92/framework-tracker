@@ -2,12 +2,12 @@
   "name": "Astro SSR",
   "package": "app-astro",
   "type": "ssr-app",
-  "ssrOpsPerSec": 645,
-  "ssrAvgLatencyMs": 1.549,
-  "ssrSamples": 6454,
+  "ssrOpsPerSec": 654,
+  "ssrAvgLatencyMs": 1.53,
+  "ssrSamples": 6536,
   "ssrBodySizeKb": 99.86,
   "ssrDuplicationFactor": 1,
-  "timingMeasuredAt": "2026-02-07T11:09:22.757Z",
+  "timingMeasuredAt": "2026-02-07T22:48:32.771Z",
   "runner": "ubuntu-latest",
   "frameworkVersion": "5.16.15"
 }

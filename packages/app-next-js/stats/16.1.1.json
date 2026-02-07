@@ -1,10 +1,10 @@
 {
-  "timingMeasuredAt": "2026-02-07T11:09:22.757Z",
+  "timingMeasuredAt": "2026-02-07T22:48:32.771Z",
   "runner": "ubuntu-latest",
   "frameworkVersion": "16.1.1",
-  "ssrOpsPerSec": 42,
-  "ssrAvgLatencyMs": 23.99,
-  "ssrSamples": 417,
+  "ssrOpsPerSec": 41,
+  "ssrAvgLatencyMs": 24.647,
+  "ssrSamples": 406,
   "ssrBodySizeKb": 336.38,
   "ssrDuplicationFactor": 2.49
 }

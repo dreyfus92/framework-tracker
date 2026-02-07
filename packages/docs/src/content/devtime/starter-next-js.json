@@ -5,10 +5,10 @@
   "devDependencies": 6,
   "package": "starter-next-js",
   "installTimeMs": 7166,
-  "coldBuildTimeMs": 7045,
-  "warmBuildTimeMs": 7188,
+  "coldBuildTimeMs": 7159,
+  "warmBuildTimeMs": 7159,
   "buildOutputSize": 6426624,
-  "timingMeasuredAt": "2026-02-06T23:02:57.132Z",
+  "timingMeasuredAt": "2026-02-07T22:48:32.771Z",
   "runner": "ubuntu-latest",
   "nodeModulesSize": 586166272,
   "nodeModulesSizeProdOnly": 457183232,
@@ -17,18 +17,18 @@
   "minInstallTimeMs": 3414,
   "maxInstallTimeMs": 6993,
   "coldBuildTime": {
-    "avgMs": 6922.2,
-    "minMs": 6871,
-    "maxMs": 7017
+    "avgMs": 6998.2,
+    "minMs": 6817,
+    "maxMs": 7427
   },
   "warmBuildTime": {
-    "avgMs": 7165.8,
-    "minMs": 6811,
-    "maxMs": 8077
+    "avgMs": 6953,
+    "minMs": 6867,
+    "maxMs": 7097
   },
   "installTime": {
-    "avgMs": 4020,
-    "minMs": 3345,
-    "maxMs": 6468
+    "avgMs": 2564.4,
+    "minMs": 1850,
+    "maxMs": 5106
   }
 }
