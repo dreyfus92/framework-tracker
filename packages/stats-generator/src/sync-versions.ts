@@ -29,7 +29,9 @@ function extractVersion(
   frameworkPackage: string,
 ): { version: string; isDevDep: boolean } | null {
   const deps = packageJson.dependencies as Record<string, string> | undefined
-  const devDeps = packageJson.devDependencies as Record<string, string> | undefined
+  const devDeps = packageJson.devDependencies as
+    | Record<string, string>
+    | undefined
 
   if (deps?.[frameworkPackage]) {
     return { version: deps[frameworkPackage], isDevDep: false }
@@ -145,9 +147,7 @@ async function checkVersions(): Promise<VersionMismatch[]> {
     console.info(
       `  Starter version: ${starterVersionInfo.version} (${depLocationStarter})`,
     )
-    console.info(
-      `  App version: ${appVersionInfo.version} (${depLocationApp})`,
-    )
+    console.info(`  App version: ${appVersionInfo.version} (${depLocationApp})`)
 
     if (starterNormalized !== appNormalized) {
       console.error(`  ❌ MISMATCH: ${starterNormalized} != ${appNormalized}`)
