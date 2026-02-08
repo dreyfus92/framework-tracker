@@ -10,7 +10,9 @@ export async function getStaticPaths() {
   return devtimeEntries.map((entry) => {
     const slug = getFrameworkSlug(entry.data.package)
     const runtimePackage = `app-${slug}`
-    const runtimeEntry = runtimeEntries.find((e) => e.data.package === runtimePackage)
+    const runtimeEntry = runtimeEntries.find(
+      (e) => e.data.package === runtimePackage,
+    )
     return {
       params: { slug },
       props: {

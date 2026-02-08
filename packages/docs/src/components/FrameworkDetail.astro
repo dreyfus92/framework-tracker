@@ -12,7 +12,9 @@ const { devtime, runtime } = Astro.props
 
 const measuredDateDisplay = (() => {
   const d = new Date(devtime.timingMeasuredAt)
-  return Number.isNaN(d.getTime()) ? devtime.timingMeasuredAt : d.toLocaleDateString('en-US')
+  return Number.isNaN(d.getTime())
+    ? devtime.timingMeasuredAt
+    : d.toLocaleDateString('en-US')
 })()
 ---
 
@@ -21,21 +23,26 @@ const measuredDateDisplay = (() => {
 
   <header class="detail-header">
     <h1 class="detail-title">{devtime.name}</h1>
-    {(devtime.frameworkVersion ?? devtime.timingMeasuredAt) && (
-      <p class="detail-meta">
-        {devtime.frameworkVersion && <span>Version {devtime.frameworkVersion}</span>}
-        {devtime.frameworkVersion && devtime.timingMeasuredAt && ' · '}
-        {devtime.timingMeasuredAt && (
-          <span>Measured {measuredDateDisplay}</span>
-        )}
-      </p>
-    )}
+    {
+      (devtime.frameworkVersion ?? devtime.timingMeasuredAt) && (
+        <p class="detail-meta">
+          {devtime.frameworkVersion && (
+            <span>Version {devtime.frameworkVersion}</span>
+          )}
+          {devtime.frameworkVersion && devtime.timingMeasuredAt && ' · '}
+          {devtime.timingMeasuredAt && (
+            <span>Measured {measuredDateDisplay}</span>
+          )}
+        </p>
+      )
+    }
   </header>
 
   <section class="section">
     <h2>Dev Time Performance</h2>
     <p class="methodology">
-      Measured using pnpm on GitHub Actions (ubuntu-latest, Node 24) based on the starter project set up by each framework's CLI.
+      Measured using pnpm on GitHub Actions (ubuntu-latest, Node 24) based on
+      the starter project set up by each framework's CLI.
     </p>
 
     <div class="table-wrapper">
@@ -104,56 +111,87 @@ const measuredDateDisplay = (() => {
     </div>
 
     <p class="build-output">
-      <strong>Build output size:</strong> {formatBytesToMB(devtime.buildOutputSize)}
+      <strong>Build output size:</strong>
+      {formatBytesToMB(devtime.buildOutputSize)}
     </p>
   </section>
 
-  {runtime && (
-    <section class="section">
-      <h2>Runtime Performance</h2>
-      <h3>SSR Performance</h3>
-      <p class="methodology">
-        Measured on GitHub Actions (ubuntu-latest, Node 24) using custom SSR benchmark apps.
-      </p>
-      <div class="table-wrapper">
-        <table aria-label="SSR performance">
-          <thead>
-            <tr>
-              <th scope="col">Ops/sec</th>
-              <th scope="col">Avg Latency</th>
-              <th scope="col">Body Size</th>
-              <th scope="col">Duplication</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{runtime.ssrOpsPerSec?.toLocaleString()}</td>
-              <td>{runtime.ssrAvgLatencyMs}ms</td>
-              <td>{runtime.ssrBodySizeKb}kb</td>
-              <td>{runtime.ssrDuplicationFactor}x</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  {
+    runtime && (
+      <section class="section">
+        <h2>Runtime Performance</h2>
+        <h3>SSR Performance</h3>
+        <p class="methodology">
+          Measured on GitHub Actions (ubuntu-latest, Node 24) using custom SSR
+          benchmark apps.
+        </p>
+        <div class="table-wrapper">
+          <table aria-label="SSR performance">
+            <thead>
+              <tr>
+                <th scope="col">Ops/sec</th>
+                <th scope="col">Avg Latency</th>
+                <th scope="col">Body Size</th>
+                <th scope="col">Duplication</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{runtime.ssrOpsPerSec?.toLocaleString()}</td>
+                <td>{runtime.ssrAvgLatencyMs}ms</td>
+                <td>{runtime.ssrBodySizeKb}kb</td>
+                <td>{runtime.ssrDuplicationFactor}x</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-      <div class="methodology-notes">
-        <h4>Methodology</h4>
-        <ul>
-          <li>Each framework renders a table of 1000 rows with two UUID columns</li>
-          <li>Mock HTTP requests bypass TCP overhead for accurate rendering measurement</li>
-          <li>Data is loaded asynchronously to simulate real-world data fetching</li>
-          <li>Duplication factor indicates how many times each UUID appears in the response (1x = optimal, 2x = includes hydration payload)</li>
-          <li>
-            Benchmarks run for 10 seconds using <a href="https://github.com/tinylibs/tinybench" target="_blank" rel="noopener noreferrer">tinybench</a>
-          </li>
-          <li>React Router uses Web APIs internally; benchmarks include the cost of its official Node.js adapter (<code>@react-router/node</code>)</li>
-          <li>
-            Inspired by <a href="https://github.com/eknkc/ssr-benchmark" target="_blank" rel="noopener noreferrer">eknkc/ssr-benchmark</a>
-          </li>
-        </ul>
-      </div>
-    </section>
-  )}
+        <div class="methodology-notes">
+          <h4>Methodology</h4>
+          <ul>
+            <li>
+              Each framework renders a table of 1000 rows with two UUID columns
+            </li>
+            <li>
+              Mock HTTP requests bypass TCP overhead for accurate rendering
+              measurement
+            </li>
+            <li>
+              Data is loaded asynchronously to simulate real-world data fetching
+            </li>
+            <li>
+              Duplication factor indicates how many times each UUID appears in
+              the response (1x = optimal, 2x = includes hydration payload)
+            </li>
+            <li>
+              Benchmarks run for 10 seconds using{' '}
+              <a
+                href="https://github.com/tinylibs/tinybench"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                tinybench
+              </a>
+            </li>
+            <li>
+              React Router uses Web APIs internally; benchmarks include the cost
+              of its official Node.js adapter (<code>@react-router/node</code>)
+            </li>
+            <li>
+              Inspired by{' '}
+              <a
+                href="https://github.com/eknkc/ssr-benchmark"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                eknkc/ssr-benchmark
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+    )
+  }
 </div>
 
 <style>
