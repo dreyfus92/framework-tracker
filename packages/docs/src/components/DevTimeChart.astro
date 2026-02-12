@@ -412,8 +412,9 @@ const chartData = JSON.stringify([
         .transition()
         .duration(600)
         .ease(d3.easeCubicOut)
-        .attr('y', (d) => yScale(d.max))
-        .attr('height', (d) => yScale(d.min) - yScale(d.max))
+        .attr('y', (d) => yScale((d as DataInSeconds).max))
+        .attr('height', (d) =>
+          yScale((d as DataInSeconds).min) - yScale((d as DataInSeconds).max))
 
       boxes
         .selectAll('.avg-line')
