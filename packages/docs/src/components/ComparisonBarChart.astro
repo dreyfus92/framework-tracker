@@ -114,7 +114,10 @@ const chartPayload = JSON.stringify({ data, valueFormat })
   import * as d3 from 'd3'
   import type { ChartDatum, ComparisonChartPayload } from '../lib/types'
 
-  const chartDimensionsCache = new WeakMap<HTMLElement, { width: number; height: number }>()
+  const chartDimensionsCache = new WeakMap<
+    HTMLElement,
+    { width: number; height: number }
+  >()
 
   function formatValue(value: number, format: 'count' | 'mb'): string {
     if (format === 'count') return String(Math.round(value))
@@ -177,10 +180,14 @@ const chartPayload = JSON.stringify({ data, valueFormat })
       .closest('.comparison-chart-container')
       ?.querySelector('.comparison-chart-title')
     const chartTitle = titleEl?.textContent ?? 'Comparison'
-    d3.select(svg).append('title').text(`${chartTitle}. Bar chart comparing frameworks.`)
+    d3.select(svg)
+      .append('title')
+      .text(`${chartTitle}. Bar chart comparing frameworks.`)
     d3.select(svg)
       .append('desc')
-      .text(`Bar chart comparing each framework by ${chartTitle}. See table for exact values.`)
+      .text(
+        `Bar chart comparing each framework by ${chartTitle}. See table for exact values.`,
+      )
 
     const gradientId = `comparisonBarGradient-${crypto.randomUUID()}`
     const g = d3
@@ -222,7 +229,9 @@ const chartPayload = JSON.stringify({ data, valueFormat })
     g.append('g')
       .attr('transform', `translate(0,${innerHeight})`)
       .call(d3.axisBottom(xScale).tickSize(0))
-      .call((sel) => sel.select('.domain').attr('class', 'comparison-axis-domain'))
+      .call((sel) =>
+        sel.select('.domain').attr('class', 'comparison-axis-domain'),
+      )
       .call((sel) =>
         sel
           .selectAll('text')
@@ -234,11 +243,15 @@ const chartPayload = JSON.stringify({ data, valueFormat })
 
     g.append('g')
       .call(d3.axisLeft(yScale).tickSize(0))
-      .call((sel) => sel.select('.domain').attr('class', 'comparison-axis-domain'))
+      .call((sel) =>
+        sel.select('.domain').attr('class', 'comparison-axis-domain'),
+      )
       .call((sel) =>
         sel.selectAll('.tick line').attr('class', 'comparison-axis-tick-line'),
       )
-      .call((sel) => sel.selectAll('text').attr('class', 'comparison-y-axis-text'))
+      .call((sel) =>
+        sel.selectAll('text').attr('class', 'comparison-y-axis-text'),
+      )
 
     g.append('g')
       .attr('class', 'comparison-grid')
@@ -275,11 +288,7 @@ const chartPayload = JSON.stringify({ data, valueFormat })
     bars
       .on('mouseenter', function (_event: MouseEvent, d: ChartDatum) {
         d3.select(this).select('rect').attr('opacity', 1)
-        setTooltipContent(
-          tooltip,
-          d.name,
-          formatValue(d.value, valueFormat),
-        )
+        setTooltipContent(tooltip, d.name, formatValue(d.value, valueFormat))
         tooltip.classList.add('visible')
       })
       .on('mousemove', function (event: MouseEvent) {

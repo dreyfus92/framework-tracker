@@ -24,8 +24,14 @@ const validForCharts = starterStats.filter(
     Number.isFinite(f.nodeModulesSizeProdOnly),
 )
 
-const depsData = validForCharts.map((f) => ({ name: f.name, value: f.devDependencies }))
-const prodDepsData = validForCharts.map((f) => ({ name: f.name, value: f.prodDependencies }))
+const depsData = validForCharts.map((f) => ({
+  name: f.name,
+  value: f.devDependencies,
+}))
+const prodDepsData = validForCharts.map((f) => ({
+  name: f.name,
+  value: f.prodDependencies,
+}))
 const buildSizeData = validForCharts.map((f) => ({
   name: f.name,
   value: f.buildOutputSize / BYTES_PER_MB,
@@ -109,7 +115,10 @@ const buildSizeProdData = validForCharts.map((f) => ({
         </table>
       </div>
 
-      <div class="chart-tabs-container section-with-tabs" data-tab-section="deps">
+      <div
+        class="chart-tabs-container section-with-tabs"
+        data-tab-section="deps"
+      >
         <div
           class="tablist chart-tablist"
           role="tablist"
@@ -143,7 +152,11 @@ const buildSizeProdData = validForCharts.map((f) => ({
             aria-labelledby="deps-deps-tab"
             class="tabpanel chart-tabpanel active"
           >
-            <ComparisonBarChart title="Deps" data={depsData} valueFormat="count" />
+            <ComparisonBarChart
+              title="Deps"
+              data={depsData}
+              valueFormat="count"
+            />
           </div>
           <div
             role="tabpanel"
@@ -199,7 +212,10 @@ const buildSizeProdData = validForCharts.map((f) => ({
         </table>
       </div>
 
-      <div class="chart-tabs-container section-with-tabs" data-tab-section="build">
+      <div
+        class="chart-tabs-container section-with-tabs"
+        data-tab-section="build"
+      >
         <div
           class="tablist chart-tablist"
           role="tablist"
@@ -645,7 +661,10 @@ const buildSizeProdData = validForCharts.map((f) => ({
     margin-bottom: -1px;
     cursor: pointer;
     font-family: inherit;
-    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+    transition:
+      color 0.2s,
+      border-color 0.2s,
+      background-color 0.2s;
   }
 
   .chart-tablist .tab {
@@ -763,9 +782,7 @@ const buildSizeProdData = validForCharts.map((f) => ({
       '.chart-tabs-container[data-tab-section]',
     )
     sections.forEach((section: Element) => {
-      const tabs = section.querySelectorAll<HTMLButtonElement>(
-        '[role="tab"]',
-      )
+      const tabs = section.querySelectorAll<HTMLButtonElement>('[role="tab"]')
       const panels = section.querySelectorAll<HTMLElement>('[role="tabpanel"]')
 
       if (tabs.length !== 2 || panels.length !== 2) return
