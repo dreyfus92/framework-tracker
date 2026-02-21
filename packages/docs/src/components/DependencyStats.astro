@@ -8,6 +8,7 @@ import {
 } from '../lib/utils'
 import '../styles/shared.css'
 import ComparisonBarChart from './ComparisonBarChart.astro'
+import FocusedToggle from './FocusedToggle.astro'
 
 const devtimeEntries = await getCollection('devtime')
 const runtimeEntries = await getCollection('runtime')
@@ -67,6 +68,8 @@ const buildSizeProdData = validForCharts.map((f) => ({
         our methodology and testing process.
       </p>
 
+      <FocusedToggle />
+
       <h2>Dev Time Performance</h2>
 
       <p class="methodology">
@@ -79,7 +82,7 @@ const buildSizeProdData = validForCharts.map((f) => ({
           <thead>
             <tr>
               <th scope="col">Framework</th>
-              <th scope="col">Prod Deps</th>
+              <th scope="col"></th>
               <th scope="col">Dev Deps</th>
               <th scope="col">Size</th>
               <th scope="col">Size (Prod Only)</th>
@@ -89,7 +92,7 @@ const buildSizeProdData = validForCharts.map((f) => ({
           <tbody>
             {
               starterStats.map((framework) => (
-                <tr>
+                <tr data-focused={framework.isFocused ? 'true' : 'false'}>
                   <td class="framework-name">
                     <a
                       href={`/framework/${getFrameworkSlug(framework.package)}`}
@@ -194,7 +197,7 @@ const buildSizeProdData = validForCharts.map((f) => ({
           <tbody>
             {
               starterStats.map((framework) => (
-                <tr>
+                <tr data-focused={framework.isFocused ? 'true' : 'false'}>
                   <td class="framework-name">
                     <a
                       href={`/framework/${getFrameworkSlug(framework.package)}`}
@@ -298,7 +301,7 @@ const buildSizeProdData = validForCharts.map((f) => ({
           <tbody>
             {
               ssrStats.map((framework) => (
-                <tr>
+                <tr data-focused={framework.isFocused ? 'true' : 'false'}>
                   <td class="framework-name">
                     {framework.package === 'app-baseline-html' ? (
                       <span>{framework.name}</span>

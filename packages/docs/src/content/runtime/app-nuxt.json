@@ -1,6 +1,7 @@
 {
   "name": "Nuxt",
   "package": "app-nuxt",
+  "isFocused": true,
   "type": "ssr-app",
   "ssrOpsPerSec": 235,
   "ssrAvgLatencyMs": 4.263,
