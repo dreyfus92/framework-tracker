@@ -15,6 +15,7 @@ on:
       - '!packages/app-*/stats/**'
       - 'packages/stats-generator/**'
       - '.github/workflows/generate-stats.yml'
+      - '.github/workflows/measure-framework.yml'
       - '.github/frameworks.json'
       - 'package.json'
 
