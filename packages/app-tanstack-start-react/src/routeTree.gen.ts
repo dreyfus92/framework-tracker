@@ -10,12 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SpaRouteImport } from './routes/spa'
+import { Route as MpaRouteImport } from './routes/mpa'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SpaDetailRouteImport } from './routes/spa_.detail'
+import { Route as MpaDetailRouteImport } from './routes/mpa_.detail'
 
 const SpaRoute = SpaRouteImport.update({
   id: '/spa',
   path: '/spa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MpaRoute = MpaRouteImport.update({
+  id: '/mpa',
+  path: '/mpa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,34 +35,47 @@ const SpaDetailRoute = SpaDetailRouteImport.update({
   path: '/spa/detail',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MpaDetailRoute = MpaDetailRouteImport.update({
+  id: '/mpa_/detail',
+  path: '/mpa/detail',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/mpa': typeof MpaRoute
   '/spa': typeof SpaRoute
+  '/mpa/detail': typeof MpaDetailRoute
   '/spa/detail': typeof SpaDetailRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/mpa': typeof MpaRoute
   '/spa': typeof SpaRoute
+  '/mpa/detail': typeof MpaDetailRoute
   '/spa/detail': typeof SpaDetailRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/mpa': typeof MpaRoute
   '/spa': typeof SpaRoute
+  '/mpa_/detail': typeof MpaDetailRoute
   '/spa_/detail': typeof SpaDetailRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/spa' | '/spa/detail'
+  fullPaths: '/' | '/mpa' | '/spa' | '/mpa/detail' | '/spa/detail'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/spa' | '/spa/detail'
-  id: '__root__' | '/' | '/spa' | '/spa_/detail'
+  to: '/' | '/mpa' | '/spa' | '/mpa/detail' | '/spa/detail'
+  id: '__root__' | '/' | '/mpa' | '/spa' | '/mpa_/detail' | '/spa_/detail'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MpaRoute: typeof MpaRoute
   SpaRoute: typeof SpaRoute
+  MpaDetailRoute: typeof MpaDetailRoute
   SpaDetailRoute: typeof SpaDetailRoute
 }
 
@@ -66,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/spa'
       fullPath: '/spa'
       preLoaderRoute: typeof SpaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mpa': {
+      id: '/mpa'
+      path: '/mpa'
+      fullPath: '/mpa'
+      preLoaderRoute: typeof MpaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,12 +109,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpaDetailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mpa_/detail': {
+      id: '/mpa_/detail'
+      path: '/mpa/detail'
+      fullPath: '/mpa/detail'
+      preLoaderRoute: typeof MpaDetailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MpaRoute: MpaRoute,
   SpaRoute: SpaRoute,
+  MpaDetailRoute: MpaDetailRoute,
   SpaDetailRoute: SpaDetailRoute,
 }
 export const routeTree = rootRouteImport
