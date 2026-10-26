@@ -1,6 +1,9 @@
+import { INTERACTION_PHASES } from './interaction-phases.ts'
 import { metricCatalogue } from './metrics.ts'
 import type {
   ChartMeasurement,
+  InteractionHistoryDatum,
+  InteractionTimings,
   InstallChartMeasurement,
   MetricDefinition,
   PreparedComparisonChart,
@@ -300,6 +303,52 @@ export function prepareClientSideRenderedTestsFcpMsComparison(
       value: finiteValue(record.clientSideRenderedTests?.fcpMs),
     })),
   )
+}
+
+const INTERACTION_KEYS = [
+  'interactionLatencyMs',
+  ...INTERACTION_PHASES.map(({ key }) => key),
+] as const
+
+function hasInteractionTimings(
+  timings: InteractionTimings | undefined,
+): timings is Required<InteractionTimings> {
+  return (
+    timings != null &&
+    INTERACTION_KEYS.every((key) => finiteValue(timings[key]) != null)
+  )
+}
+
+function interactionHistory(
+  records: readonly ChartMeasurement[],
+  testsKey: 'clientSideRenderedTests' | 'serverSideRenderedTests',
+): InteractionHistoryDatum[] {
+  return records.flatMap((record) => {
+    const timings = record[testsKey]?.interactionTests
+    if (!hasInteractionTimings(timings)) return []
+
+    const version = record.frameworkVersion ?? 'Unknown'
+    return {
+      id: `${record.package ?? 'unknown'}:${version}`,
+      name: `v${version}`,
+      interactionLatencyMs: timings.interactionLatencyMs,
+      inputDelayMs: timings.inputDelayMs,
+      processingDurationMs: timings.processingDurationMs,
+      presentationDelayMs: timings.presentationDelayMs,
+    }
+  })
+}
+
+export function prepareClientSideRenderedTestsInteractionHistory(
+  records: readonly ChartMeasurement[],
+): InteractionHistoryDatum[] {
+  return interactionHistory(records, 'clientSideRenderedTests')
+}
+
+export function prepareServerSideRenderedTestsInteractionHistory(
+  records: readonly ChartMeasurement[],
+): InteractionHistoryDatum[] {
+  return interactionHistory(records, 'serverSideRenderedTests')
 }
 
 export function prepareInstallTimeHistory(
