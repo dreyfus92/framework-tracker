@@ -6,7 +6,7 @@ import {
   prepareClientSideRenderedTestsInteractionHistory,
 } from '../lib/prepare-chart'
 import VersionLineChart from './VersionLineChart.astro'
-import InteractionBreakdownChart from './InteractionBreakdownChart.astro'
+import InteractionHistoryChart from './InteractionHistoryChart.astro'
 
 interface Props {
   versions: ChartMeasurement[]
@@ -24,10 +24,9 @@ const interactionData =
 <VersionLineChart {...prepareClientSideRenderedTestsFcpMsHistory(versions)} />
 {
   interactionData.length > 0 ? (
-    <InteractionBreakdownChart
+    <InteractionHistoryChart
       title="Client Interaction Breakdown by Version"
       data={interactionData}
-      orientation="vertical"
     />
   ) : null
 }
