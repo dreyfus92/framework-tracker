@@ -72,36 +72,27 @@ const FRAMEWORK_LOGOS: Record<string, { dark: string; light?: string }> = {
     class="horizontal-bars"
     style={`--interaction-chart-height: ${chartHeight}px`}
   >
-    {
-      data.length > 1 ? (
-        <>
-          <div class="median-layer all-median" aria-hidden="true">
-            <div class="median-plot">
-              <span
-                class="median-line"
-                style={`left: ${segmentSize(medianLatency)}`}
-              >
-                <span class="median-label">
-                  Median: {formatChartValue(medianLatency, 'ms')}
-                </span>
-              </span>
-            </div>
-          </div>
-          <div class="median-layer focused-median" aria-hidden="true">
-            <div class="median-plot">
-              <span
-                class="median-line"
-                style={`left: ${segmentSize(focusedMedianLatency)}`}
-              >
-                <span class="median-label">
-                  Median: {formatChartValue(focusedMedianLatency, 'ms')}
-                </span>
-              </span>
-            </div>
-          </div>
-        </>
-      ) : null
-    }
+    <div class="median-layer all-median" aria-hidden="true">
+      <div class="median-plot">
+        <span class="median-line" style={`left: ${segmentSize(medianLatency)}`}>
+          <span class="median-label">
+            Median: {formatChartValue(medianLatency, 'ms')}
+          </span>
+        </span>
+      </div>
+    </div>
+    <div class="median-layer focused-median" aria-hidden="true">
+      <div class="median-plot">
+        <span
+          class="median-line"
+          style={`left: ${segmentSize(focusedMedianLatency)}`}
+        >
+          <span class="median-label">
+            Median: {formatChartValue(focusedMedianLatency, 'ms')}
+          </span>
+        </span>
+      </div>
+    </div>
     {
       data.map((datum) => {
         const logo = FRAMEWORK_LOGOS[datum.name]

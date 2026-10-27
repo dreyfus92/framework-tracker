@@ -2,7 +2,6 @@
 import { formatChartValue } from '../lib/chart'
 import { INTERACTION_PHASES } from '../lib/interaction-phases'
 import type { InteractionHistoryDatum } from '../lib/types'
-import InteractionBreakdownChart from './InteractionBreakdownChart.astro'
 import InteractionChartCaption from './InteractionChartCaption.astro'
 
 interface Props {
@@ -16,10 +15,12 @@ const chartPayload = JSON.stringify({ title, data })
 
 {
   data.length < 2 ? (
-    <InteractionBreakdownChart
-      title={data.length === 1 ? `${title} (${data[0]!.name})` : title}
-      data={data}
-    />
+    <figure class="interaction-history">
+      <p class="interaction-history-title">{title}</p>
+      <p class="interaction-history-empty">
+        Not enough data yet. This chart needs at least two versions.
+      </p>
+    </figure>
   ) : (
     <figure class="interaction-history">
       <InteractionChartCaption title={title} />
@@ -62,6 +63,23 @@ const chartPayload = JSON.stringify({ title, data })
   .interaction-history {
     width: 100%;
     margin: 0 0 2em;
+  }
+
+  .interaction-history-title {
+    margin-bottom: 0.35rem;
+    color: var(--sl-color-white);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: var(--sl-line-height-headings);
+  }
+
+  .interaction-history-empty {
+    padding: 2rem 1rem;
+    border: 1px dashed var(--ft-border);
+    border-radius: 0.5rem;
+    color: var(--ft-muted);
+    font-size: 0.9rem;
+    text-align: center;
   }
 
   .interaction-history-wrapper {
