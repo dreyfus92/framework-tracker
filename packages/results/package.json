@@ -1,0 +1,16 @@
+{
+  "name": "@framework-tracker/results",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/schemas.ts",
+    "./selection": "./src/selection.ts",
+    "./frameworks": "./src/frameworks.ts",
+    "./measurements": "./src/measurements.ts",
+    "./storage": "./src/storage.ts"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  }
+}

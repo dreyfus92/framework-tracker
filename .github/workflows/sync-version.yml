@@ -5,6 +5,7 @@ on:
     paths:
       - 'packages/starter-*/package.json'
       - 'packages/app-*/package.json'
+      - 'packages/results/**'
       - 'packages/stats-generator/src/frameworks.ts'
   workflow_dispatch: # Allows manual triggering from GitHub Actions UI
 
@@ -25,7 +26,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install stats-generator dependencies
-        run: pnpm install --frozen-lockfile --filter @framework-tracker/stats-generator
+        run: pnpm install --frozen-lockfile --filter @framework-tracker/stats-generator...
 
       - name: Check version synchronization
         run: pnpm --filter @framework-tracker/stats-generator sync:versions

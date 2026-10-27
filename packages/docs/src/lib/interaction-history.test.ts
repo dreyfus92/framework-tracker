@@ -3,7 +3,7 @@ import { test } from 'node:test'
 import {
   prepareClientSideRenderedTestsInteractionHistory,
   prepareServerSideRenderedTestsInteractionHistory,
-} from './prepare-chart.ts'
+} from './chart-measurements.ts'
 
 const timings = (inputDelayMs: number, processingDurationMs: number) => ({
   inputDelayMs,

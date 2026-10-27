@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "collect": "node src/collect-stats.ts",
     "run:ssr-request-throughput": "node src/run-ssr-request-throughput-benchmark.ts",
     "run:ssr-load": "node src/run-ssr-load-benchmark.ts",
     "run:ssr-load:containerized": "node src/run-containerized-ssr-load.ts",
@@ -42,7 +41,8 @@
     "tinyglobby": "^0.2.17",
     "verkit": "^0.4.0",
     "yaml": "2.9.0",
-    "zod": "^4.4.3"
+    "zod": "catalog:",
+    "@framework-tracker/results": "workspace:*"
   },
   "devDependencies": {
     "@types/autocannon": "^7.12.7",
