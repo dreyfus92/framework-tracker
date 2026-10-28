@@ -5,86 +5,95 @@ import {
   prepareServerSideRenderedTestsInteractionHistory,
 } from './chart-measurements.ts'
 
-const timings = (inputDelayMs: number, processingDurationMs: number) => ({
-  inputDelayMs,
-  processingDurationMs,
-  presentationDelayMs: 3,
-  interactionLatencyMs: inputDelayMs + processingDurationMs + 3,
+const run = (
+  inputDelayMs: number,
+  processingDurationMs: number,
+  presentationDelayMs: number,
+) => ({
+  interactionTests: {
+    inputDelayMs,
+    processingDurationMs,
+    presentationDelayMs,
+    interactionLatencyMs:
+      inputDelayMs + processingDurationMs + presentationDelayMs,
+  },
 })
 
-const records = [
-  {
-    package: 'app-next',
-    frameworkVersion: '14.0.0',
-    clientSideRenderedTests: { interactionTests: timings(1, 2) },
-    serverSideRenderedTests: { interactionTests: timings(4, 5) },
-  },
-  {
-    package: 'app-next',
-    frameworkVersion: '15.0.0',
-    clientSideRenderedTests: { firstPaintMs: 100 },
-    serverSideRenderedTests: { interactionTests: timings(6, 7) },
-  },
-  {
-    package: 'app-next',
-    frameworkVersion: '16.0.0',
-    clientSideRenderedTests: {
-      interactionTests: { ...timings(8, 9), presentationDelayMs: undefined },
-    },
-  },
-  {
-    package: 'app-next',
-    frameworkVersion: '17.0.0',
-    clientSideRenderedTests: { interactionTests: timings(10, 11) },
-    serverSideRenderedTests: {
-      interactionTests: { ...timings(12, 13), inputDelayMs: Number.NaN },
-    },
-  },
+const runs = [
+  run(1, 30, 9),
+  run(2, 10, 3),
+  run(1, 20, 9),
+  run(5, 40, 20),
+  run(3, 12, 10),
 ]
 
-test('client history keeps only versions with complete interaction data, in input order', () => {
-  assert.deepEqual(prepareClientSideRenderedTestsInteractionHistory(records), [
-    { id: 'app-next:14.0.0', name: 'v14.0.0', ...timings(1, 2) },
-    { id: 'app-next:17.0.0', name: 'v17.0.0', ...timings(10, 11) },
+test('uses the run with the median total so the phases add up to it', () => {
+  const [row] = prepareClientSideRenderedTestsInteractionHistory([
+    {
+      package: 'app-next',
+      frameworkVersion: '14.0.0',
+      clientSideRenderedTests: { iterations: runs },
+    },
   ])
+  assert.deepEqual(row, {
+    id: 'app-next:14.0.0',
+    name: 'v14.0.0',
+    inputDelayMs: 1,
+    processingDurationMs: 20,
+    presentationDelayMs: 9,
+    interactionLatencyMs: 30,
+  })
 })
 
-test('server history reads the server measurements independently', () => {
+test('skips versions without complete runs and keeps input order', () => {
+  const records = [
+    {
+      frameworkVersion: '14.0.0',
+      clientSideRenderedTests: { iterations: [run(1, 2, 3)] },
+    },
+    { frameworkVersion: '15.0.0', clientSideRenderedTests: {} },
+    {
+      frameworkVersion: '16.0.0',
+      clientSideRenderedTests: {
+        iterations: [
+          {
+            interactionTests: {
+              ...run(1, 2, 3).interactionTests,
+              inputDelayMs: Number.NaN,
+            },
+          },
+        ],
+      },
+    },
+    {
+      frameworkVersion: '17.0.0',
+      clientSideRenderedTests: { iterations: [run(4, 5, 6)] },
+    },
+  ]
   assert.deepEqual(
-    prepareServerSideRenderedTestsInteractionHistory(records).map(
+    prepareClientSideRenderedTestsInteractionHistory(records).map(
       (row) => row.name,
     ),
-    ['v14.0.0', 'v15.0.0'],
+    ['v14.0.0', 'v17.0.0'],
   )
 })
 
-test('history is empty when no version has interaction data', () => {
+test('server history reads the server runs', () => {
+  const [row] = prepareServerSideRenderedTestsInteractionHistory([
+    {
+      frameworkVersion: '14.0.0',
+      clientSideRenderedTests: { iterations: [run(1, 1, 1)] },
+      serverSideRenderedTests: { iterations: [run(7, 8, 9)] },
+    },
+  ])
+  assert.equal(row?.interactionLatencyMs, 24)
+})
+
+test('history is empty when no version has runs', () => {
   assert.deepEqual(
     prepareClientSideRenderedTestsInteractionHistory([
       { package: 'app-pracht', frameworkVersion: '1.0.0' },
     ]),
     [],
   )
-})
-
-test('history rows carry only chart fields, not the raw measurement metadata', () => {
-  const interactionTests = {
-    ...timings(1, 2),
-    scenario: 'first-row-detail-navigation',
-  }
-  const [row] = prepareClientSideRenderedTestsInteractionHistory([
-    {
-      package: 'app-next',
-      frameworkVersion: '14.0.0',
-      clientSideRenderedTests: { interactionTests },
-    },
-  ])
-  assert.deepEqual(Object.keys(row!).sort(), [
-    'id',
-    'inputDelayMs',
-    'interactionLatencyMs',
-    'name',
-    'presentationDelayMs',
-    'processingDurationMs',
-  ])
 })

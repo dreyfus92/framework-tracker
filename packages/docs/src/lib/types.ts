@@ -76,7 +76,7 @@ export interface ChartMeasurement {
   clientSideRenderedTests?: {
     firstPaintMs?: number
     fcpMs?: number
-    interactionTests?: InteractionTimings
+    iterations?: readonly { interactionTests?: InteractionTimings }[]
   }
   coldBuildTime?: {
     avgMs?: number
@@ -88,7 +88,7 @@ export interface ChartMeasurement {
   serverSideRenderedTests?: {
     firstPaintMs?: number
     fcpMs?: number
-    interactionTests?: InteractionTimings
+    iterations?: readonly { interactionTests?: InteractionTimings }[]
   }
   ssrRequestThroughputTests?: {
     opsPerSec?: number
